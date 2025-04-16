@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>STOMP 채팅 테스트</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+<h2>STOMP 채팅 테스트</h2>
+
+<input type="text" id="message" placeholder="메시지를 입력하세요" />
+<button onclick="sendMessage()">보내기</button>
+
+<ul id="chat-list"></ul>
+
+<script>
+    const userId = '사용자-' + Math.floor(Math.random() * 1000); // 랜덤 사용자 ID 생성
+    const socket = new SockJS("/portfolio");
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function () {
+        stompClient.subscribe("/topic/greetings", function (response) {
+            const message = JSON.parse(response.body);
+            const chatList = document.getElementById("chat-list");
+            const li = document.createElement("li");
+            li.textContent = message.sender + " : " + message.content;
+            chatList.appendChild(li);
+        });
+    });
+
+    function sendMessage() {
+        const content = document.getElementById("message").value;
+        stompClient.send("/app/hello", {}, JSON.stringify({ sender: userId, content: content }));
+        document.getElementById("message").value = "";
+    }
+</script>
+</body>
+</html>
