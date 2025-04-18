@@ -9,7 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -23,6 +23,8 @@ public class User {
     @Column(nullable = false)
     private String password; // 암호화된 비밀번호
 
+    private String phoneNumber;
+
     private String email;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -33,14 +35,16 @@ public class User {
                 .username(userCreateReq.getUsername())
                 .email(userCreateReq.getEmail())
                 .password(encodedPassword)
+                .phoneNumber(userCreateReq.getPhoneNumber())
                 .build();
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private User(String username, String email, String password) {
+    private User(String username, String email, String password, String phoneNumber) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.phoneNumber = phoneNumber;
     }
 
     public void updateUserProfile(UserProfile profile){

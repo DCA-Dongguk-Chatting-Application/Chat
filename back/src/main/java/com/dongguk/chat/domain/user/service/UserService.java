@@ -19,7 +19,6 @@ public class UserService {
         User reqUser = User.register(userCreateReq, encodedPassword);
 
         System.out.println("reqUserId :    " + reqUser.getUsername());
-
         User savedUser = userRepository.save(reqUser);
         return UserResponseDto.fromUser(savedUser);
     }
