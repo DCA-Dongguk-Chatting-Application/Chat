@@ -52,9 +52,15 @@ public class User {
     }
 
     public String getUserProfileNickname(){
+        if(profile == null){
+            return null;
+        }
         return this.getProfile().getNickname();
     }
     public String getUserProfileImg(){
+        if(profile == null){
+            return null;
+        }
         return this.getProfile().getImageUrl();
     }
 }
