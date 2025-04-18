@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>STOMP 채팅 테스트</title>
@@ -9,29 +9,51 @@
 <body>
 <h2>STOMP 채팅 테스트</h2>
 
+<label>Room ID: <input type="text" id="roomId" placeholder="채팅방 ID 입력" /></label><br>
+<label>Sender ID: <input type="text" id="sender" placeholder="보내는 사람 ID 입력" /></label><br>
 <input type="text" id="message" placeholder="메시지를 입력하세요" />
 <button onclick="sendMessage()">보내기</button>
 
 <ul id="chat-list"></ul>
 
 <script>
-    const userId = '사용자-' + Math.floor(Math.random() * 1000); // 랜덤 사용자 ID 생성
     const socket = new SockJS("/portfolio");
     const stompClient = Stomp.over(socket);
 
+    let currentRoomId = null;
+
     stompClient.connect({}, function () {
-        stompClient.subscribe("/topic/greetings", function (response) {
-            const message = JSON.parse(response.body);
-            const chatList = document.getElementById("chat-list");
-            const li = document.createElement("li");
-            li.textContent = message.sender + " : " + message.content;
-            chatList.appendChild(li);
+        console.log("Connected");
+
+        // 기본 roomId가 있으면 자동 구독
+        document.getElementById("roomId").addEventListener("change", function () {
+            const roomId = this.value;
+            currentRoomId = roomId;
+            stompClient.subscribe(`/topic/chatroom/${roomId}`, function (response) {
+                const message = JSON.parse(response.body);
+                const li = document.createElement("li");
+                li.textContent = `[${message.sentAt}] ${message.sender} : ${message.content}`;
+                document.getElementById("chat-list").appendChild(li);
+            });
         });
     });
 
     function sendMessage() {
+        const roomId = document.getElementById("roomId").value;
+        const sender = document.getElementById("sender").value;
         const content = document.getElementById("message").value;
-        stompClient.send("/app/hello", {}, JSON.stringify({ sender: userId, content: content }));
+
+        if (!roomId || !sender || !content) {
+            alert("모든 필드를 입력해주세요.");
+            return;
+        }
+
+        stompClient.send("/app/chat.send", {}, JSON.stringify({
+            roomId: roomId,
+            sender: sender,
+            content: content
+        }));
+
         document.getElementById("message").value = "";
     }
 </script>
