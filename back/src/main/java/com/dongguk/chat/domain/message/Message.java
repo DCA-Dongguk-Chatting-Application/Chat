@@ -5,6 +5,7 @@ import com.dongguk.chat.domain.file.FileAttachment;
 import com.dongguk.chat.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Getter
+@Setter
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
