@@ -38,6 +38,8 @@ public class ChatService {
         message.setContent(dto.getContent());
         message.setSentAt(LocalDateTime.now());
 
+        System.out.println("메세지 저장 : " + message.getContent());
+
         return messageRepository.save(message);
     }
 

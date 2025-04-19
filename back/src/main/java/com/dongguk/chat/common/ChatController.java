@@ -18,13 +18,14 @@ public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
-    public String handle(String message){
-        return message;
-    }
+//    @MessageMapping("/hello")
+//    @SendTo("/topic/greetings")
+//    public String handle(String message){
+//        return message;
+//    }
 
     @MessageMapping("/chat.send")
+    @SendTo("/topic")
     public void sendMessage(MessageSendDto messageDTO) {
         Message saved = chatService.saveMessage(messageDTO);
         messagingTemplate.convertAndSend(
