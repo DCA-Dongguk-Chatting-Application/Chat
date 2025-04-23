@@ -1,6 +1,5 @@
 package com.dongguk.chat.domain.friend;
 
-import com.dongguk.chat.domain.friend.FriendStatus;
 import com.dongguk.chat.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -49,6 +48,10 @@ public class FriendShip {
 
     public void acceptedFriendRequest(){
         this.status = FriendStatus.FRIEND;
+    }
+
+    public User findFriendList(Long userId){
+        return this.requester.getId().equals(userId) ? this.receiver : this.requester;
     }
 
     @PrePersist

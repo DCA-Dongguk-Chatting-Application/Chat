@@ -3,7 +3,6 @@ package com.dongguk.chat.domain.friend.repository;
 import com.dongguk.chat.domain.friend.FriendShip;
 import com.dongguk.chat.domain.friend.FriendStatus;
 import com.dongguk.chat.domain.friend.QFriendShip;
-import com.dongguk.chat.domain.friend.repository.FriendShipRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -54,8 +53,4 @@ public class FriendShipRepositoryImpl implements FriendShipRepositoryCustom {
     }
 
     // 내가 보낸 요청을 취소하려고 한건데, 아직 기능을 추가하진 않아서 만들진 않았음
-    @Override
-    public List<FriendShip> findSentRequests(Long userId) {
-        return null;
-    }
 }

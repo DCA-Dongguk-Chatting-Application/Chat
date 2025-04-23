@@ -7,6 +7,7 @@ import com.dongguk.chat.domain.user.User;
 import com.dongguk.chat.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,15 +18,21 @@ public class FriendShipService {
     private final UserRepository userRepository;
 
 
+    /*
+    이미 친구 상태인 FriendShip 목록을 불러오기 때문에, userId는 친구 요청 or 받은 사람이다.
+    그러므로, Response {requester : 사용자 -> receiver || receiver : 사용자 -> requester} 반환
+     */
+    @Transactional(readOnly = true)
     public List<FriendDto> getFriendsList(Long userId){
-        List<FriendShip> acceptedFriendShips = friendShipRepository.findAcceptedByUserId(userId);
-
-        List<User> friendList = acceptedFriendShips.stream().map(
-                friend -> friend.getRequester().getId().equals(userId)
-                        ?friend.getReceiver()
-                        :friend.getRequester())
-                .toList();
+        List<User> friendList = getOtherUsersFromAcceptedFriendships(userId);
         return FriendDto.fromUserList(friendList);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FriendDto> findFriendsByKeyword(Long userId, String keyword){
+        List<User> friendList = getOtherUsersFromAcceptedFriendships(userId);
+        List<User> findFriend = friendList.stream().filter(friend -> friend.getUserProfileNickname().contains(keyword)).toList();
+        return FriendDto.fromUserList(findFriend);
     }
 
     public List<FriendDto> getReceivedList(Long userId){
@@ -50,5 +57,18 @@ public class FriendShipService {
 
         FriendShip reqFriendShip = FriendShip.create(requestUser, receivedUser);
         friendShipRepository.save(reqFriendShip);
+    }
+
+    @Transactional
+    public void deleteFriendShip(Long id){
+        friendShipRepository.deleteById(id);
+    }
+
+    private List<User> getOtherUsersFromAcceptedFriendships(Long userId){
+        List<FriendShip> acceptedFriendShips = friendShipRepository.findAcceptedByUserId(userId);
+        List<User> friendList = acceptedFriendShips.stream().map(
+                        friend -> friend.findFriendList(userId))
+                .toList();
+        return friendList;
     }
 }
