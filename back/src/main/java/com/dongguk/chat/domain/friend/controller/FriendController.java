@@ -5,6 +5,7 @@ import com.dongguk.chat.domain.friend.dto.FriendDto;
 import com.dongguk.chat.domain.friend.dto.FriendRequestDto;
 import com.dongguk.chat.domain.friend.service.FriendShipService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +27,20 @@ public class FriendController {
                     현재 로그인한 사용자의 친구 목록을 조회합니다.
 
                     - 친구 상태가 `FRIEND`인 관계만 반환됩니다.
-                    - 요청자는 쿼리 파라미터로 `userId`를 넘겨야 합니다.
+                    - 친구의 닉네임으로 검색 시, `keyword` 쿼리 파라미터를 함께 전달할 수 있습니다.
+                    - `keyword`가 없으면 전체 친구 목록이 반환됩니다.
                     """
     )
-    @GetMapping
-    public ResponseEntity<List<FriendDto>> getFriendList(@RequestParam Long userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<FriendDto>> getFriendList(
+            @Parameter(description = "조회할 사용자의 ID", example = "1")
+            @PathVariable Long userId,
+            @Parameter(description = "친구 닉네임 검색 키워드 (선택)", example = "철수")
+            @RequestParam(required = false) String keyword) {
+        if(keyword != null && !keyword.isBlank()){
+            return ResponseEntity.ok(friendShipService.findFriendsByKeyword(userId, keyword));
+        }
+
         List<FriendDto> friends = friendShipService.getFriendsList(userId);
         return ResponseEntity.ok(friends);
     }
@@ -45,8 +55,8 @@ public class FriendController {
                     - 요청자는 쿼리 파라미터로 `userId`를 넘겨야 합니다.
                     """
     )
-    @GetMapping("/requests")
-    public ResponseEntity<List<FriendDto>> getReceivedRequests(@RequestParam Long userId) {
+    @GetMapping("/requests/{userId}")
+    public ResponseEntity<List<FriendDto>> getReceivedRequests(@PathVariable Long userId) {
         List<FriendDto> requests = friendShipService.getReceivedList(userId);
         return ResponseEntity.ok(requests);
     }
@@ -80,6 +90,18 @@ public class FriendController {
     @PostMapping("/accept")
     public void acceptFriendRequest(@RequestBody FriendRequestDto requestDto){
         friendShipService.acceptFriendRequest(requestDto.getRequesterId(), requestDto.getReceiverId());
+    }
 
+    @Operation(
+            summary = "친구 삭제",
+            description = """
+                    친구를 삭제합니다,
+                    
+                    - 친구 관계를 만들떄 사용했던 기본 PK(id)를 검색 후 -> 삭제합니다.
+                    """
+    )
+    @DeleteMapping("/{id}")
+    public void deleteFriend(@PathVariable Long id){
+        friendShipService.deleteFriendShip(id);
     }
 }
