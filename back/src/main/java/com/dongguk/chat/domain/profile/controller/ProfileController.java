@@ -9,10 +9,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -22,7 +21,7 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    @PostMapping
+    @PostMapping(consumes = {"multipart/form-data"})
     @Operation(
             summary = "프로필 생성",
             description = "사용자의 프로필을 생성합니다. userId에 해당하는 사용자가 존재해야 합니다.",
@@ -33,8 +32,8 @@ public class ProfileController {
             }
     )
     public ResponseEntity<ProfileResponse> createProfile(
-            @RequestBody ProfileReqDto profileReqDto
-    ) {
+            @ModelAttribute ProfileReqDto profileReqDto
+    ) throws IOException {
         ProfileResponse response = profileService.createUserProfile(profileReqDto);
         return ResponseEntity.ok(response);
     }

@@ -23,13 +23,14 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final FileStorageProperties fileStorageProperties;
 
-    public ProfileResponse createUserProfile(ProfileReqDto profileReqDto){
+    public ProfileResponse createUserProfile(ProfileReqDto profileReqDto) throws IOException {
+        System.out.println("id: -------------" + profileReqDto.getUserId());
         User findUser = userRepository.findById(profileReqDto.getUserId()).get();
 
-        String imagePath = saveProfileImage(profileReqDto.getImage();
+        String imagePath = saveProfileImage(profileReqDto.getImage());
 
 
-        UserProfile reqUserProfile = UserProfile.create(profileReqDto, findUser);
+        UserProfile reqUserProfile = UserProfile.create(profileReqDto, findUser, imagePath);
         UserProfile savedProfile = profileRepository.save(reqUserProfile);
 
         userRepository.save(findUser);
@@ -39,20 +40,25 @@ public class ProfileService {
     }
 
     private String saveProfileImage(MultipartFile file) throws IOException{
-        if(file == null || file.isEmpty()){
-            return null;
+        try{
+            if(file == null || file.isEmpty()){
+                return null;
+            }
+
+            String ext = getExtension(file.getOriginalFilename());
+            String fileName = UUID.randomUUID() + ext;
+
+            Path uploadPath = Paths.get(fileStorageProperties.getUploadDir());
+            Files.createDirectories(uploadPath);
+
+            Path savePath = uploadPath.resolve(fileName);
+            file.transferTo(savePath);
+
+            return "/static/profile/" +fileName;
+        }catch (IOException ex){
+            ex.printStackTrace();;
+            throw ex;
         }
-
-        String ext = getExtension(file.getOriginalFilename());
-        String fileName = UUID.randomUUID() + ext;
-
-        Path uploadPath = Paths.get(fileStorageProperties.getUploadDir(), "profile");
-        Files.createDirectories(uploadPath);
-
-        Path savePath = uploadPath.resolve(fileName);
-        file.transferTo(savePath);
-
-        return "/static/profile/" +fileName;
     }
 
     //파일의 확장자를 추출
