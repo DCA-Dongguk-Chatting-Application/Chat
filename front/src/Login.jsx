@@ -46,7 +46,7 @@ export const Login = () => {
                 <input class = "login-id-textbox"
                     placeholder = "아이디"
                     onChange={(e) => setIdLogin(e.target.value)}></input>
-                <input class = "login-pw-textbox" 
+                <input class = "login-pw-textbox"  type = "password"
                     placeholder = "PW"
                     onChange={(e) => setPwLogin(e.target.value)}></input>
                 <button class = "login-confirm" onClick={goToMain}>확인</button>
@@ -57,7 +57,7 @@ export const Login = () => {
                 <input class = "register-id-textbox" 
                     placeholder = "아이디"
                     onChange={(e) => setIdRegister(e.target.value)}></input>
-                <input class = "register-pw-textbox" 
+                <input class = "register-pw-textbox" type = "password" 
                     placeholder = "PW"
                     onChange={(e) => setPwRegister(e.target.value)}></input>
                 <input class = "register-name-textbox"

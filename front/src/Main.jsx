@@ -26,9 +26,12 @@ export const Main = () => {
     };
 
     const navigate = useNavigate();
-      const goSetting = () => {
+    const goSetting = () => {
         navigate("/setting"); 
-      };
+    };
+    const goLogin = () => {
+        navigate("/"); 
+    };
  
   
 
@@ -76,7 +79,8 @@ export const Main = () => {
                          /> 
                          
                         </div>
-                        <div class = "main-menu-my-profile-modal-profile-button" onClick = {goSetting}>프로필로</div>
+                        <div class = "main-menu-my-profile-modal-profile-button" onClick = {goSetting}>프로필</div>
+                        <div class = "main-menu-my-profile-modal-logout-button" onClick = {goLogin}>로그아웃</div>
                     </div>
                 </div>
             )}
