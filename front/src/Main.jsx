@@ -22,8 +22,18 @@ export const Main = () => {
     const [isExitModalOpened, setExitModalOpened] = useState(false)
     const [friendlistswitched, setfriendlistswitched] = useState(true)
     const [inviteList, setInviteList] = useState([]); //방 생성시초대목록
-    const [textbox, setTextbox] = useState("");
-    const toggleInviteFriend = (friend) => {
+    const [searchTerm, setSearchTerm] = useState("");//방 생성시 친구검색색필터
+    const [textbox, setTextbox] = useState("");//채팅칸 입력내용 받음
+    const fileInputRef = useRef(null);
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            alert(`선택된 파일: ${file.name}`);
+            // 여기에 서버 연결 api 추가가
+        }
+    };
+    const toggleInviteFriend = (friend) => {//방 생성시 친구초대대
         setInviteList((prev) => {
           const exists = prev.find((f) => f.id === friend.id);
           return exists
@@ -32,19 +42,19 @@ export const Main = () => {
         });
       };
     //각 팝업창 on/off관리
-    const ToggleMyMenu = () => {
+    const ToggleMyMenu = () => {//내 메뉴
         setmymenuModalOpened(!ismymenuModalOpened);
     };
-    const ToggleAddRoom = () => {
+    const ToggleAddRoom = () => {//방 추가시 안내창
         setRoomAddModalOpened(!isRoomAddModalOpened);
     };
-    const ToggleExitRoom = () => {
+    const ToggleExitRoom = () => {//나가기 버튼 클릭 후 팝업
         setExitModalOpened(!isExitModalOpened);
     };
-    const ToggleFriendListSwitch = () => {
+    const ToggleFriendListSwitch = () => {//누르면 친구목록, 참여자목록 전환
         setfriendlistswitched(!friendlistswitched);
     };
-
+    
     const navigate = useNavigate();
       const goSetting = () => {
         navigate("/setting"); 
@@ -76,7 +86,9 @@ export const Main = () => {
                                 className="close-icon"
                             /> </div>
                             <div class = "left-banner-room-add-friendlist-container">
-                            {friendlist.map((friend) => (
+                            {friendlist
+                            .filter((friend) =>friend.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                            .map((friend) => (
                                 <div
                                     key={friend.id}
                                     className="friend-list-item"
@@ -100,6 +112,9 @@ export const Main = () => {
                                 </div>
                                 ))}
                             </div>
+
+                            <input class = "left-banner-room-add-searchbox" placeholder="검색" value = {searchTerm} onChange = {(e)=>setSearchTerm(e.target.value)}/>
+                            <div class = "left-banner-room-ok">확인</div>
                         </div>
                     </div>
                 )}
@@ -134,9 +149,19 @@ export const Main = () => {
                 placeholder= "메시지 입력"
                 onChange={(e) => setTextbox(e.target.value)}></input>
             <button class = "message-send-button">전송</button>
-            <button class = "file-button">
-            <img  class = "icon" src={file_icon} alt="로고" style={{ width: "30px" }} />
+            
+            <button className="file-button" onClick={() => fileInputRef.current.click()}>
+                <img className="icon" src={file_icon} alt="로고" style={{ width: "30px" }} />
             </button>
+
+            <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileUpload}
+            />
+            
+               
         </div>
         <div class = "center-banner">
             <div class = "center-banner-top">
@@ -169,6 +194,7 @@ export const Main = () => {
                 </div>
         )}
 
+    
 
         <div class = "right-banner">
             <div class = "title-friend-list-container">

@@ -628,7 +628,7 @@
 .left-banner-room-add-modal-container{
     background :rgb(105, 104, 104);
     width : 500px;
-    height : 300px;
+    height : 350px;
     border-radius : 10px;
     display : flex;
     position : relative;
@@ -682,6 +682,32 @@
     border-radius : 5px;
 }
 
+.left-banner-room-add-searchbox{
+    position : absolute;
+    width : 176px;
+    height : 22px;
+    top : 70%;
+    left : 50%;
+    transform : translate(-50%, 0%);
+}
+
+.left-banner-room-ok{
+    position : absolute;
+    top : 83.5%;
+    left : 50%;
+    transform: translate(-50%, 0%);
+    width : 95px;
+    height : 37px;
+    display : flex;
+    text-align : center;
+    justify-content: center;
+    align-items: center;
+    font-size : 18px;
+    background-color : #D9D9D9;
+    border : none;
+    border-radius : 10px;
+}
+
 .title-friend-list-container{
     border: 2px solid #4C4C4C;
     width : 100%;
@@ -695,6 +721,20 @@
     position : absolute;
     right : 0%;
     margin : 10px;
+}
+
+.modal-file-upload-container{
+    background :rgb(105, 104, 104);
+    width : 300px;
+    height : 50px;
+    border-radius : 10px;
+    display : flex;
+    position : absolute;
+    bottom : 80px;
+    left : 70%;
+    transform: translate(-50%, 0%);
+    align-items: center;
+    justify-content: center;
 }
 
 /*프로필 및 설정*/
