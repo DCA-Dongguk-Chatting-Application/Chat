@@ -8,15 +8,26 @@ import com.dongguk.chat.domain.user.User;
 import com.dongguk.chat.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
+    private final FileStorageProperties fileStorageProperties;
 
     public ProfileResponse createUserProfile(ProfileReqDto profileReqDto){
         User findUser = userRepository.findById(profileReqDto.getUserId()).get();
+
+        String imagePath = saveProfileImage(profileReqDto.getImage();
+
 
         UserProfile reqUserProfile = UserProfile.create(profileReqDto, findUser);
         UserProfile savedProfile = profileRepository.save(reqUserProfile);
@@ -25,5 +36,27 @@ public class ProfileService {
 
         return ProfileResponse.from(savedProfile);
 
+    }
+
+    private String saveProfileImage(MultipartFile file) throws IOException{
+        if(file == null || file.isEmpty()){
+            return null;
+        }
+
+        String ext = getExtension(file.getOriginalFilename());
+        String fileName = UUID.randomUUID() + ext;
+
+        Path uploadPath = Paths.get(fileStorageProperties.getUploadDir(), "profile");
+        Files.createDirectories(uploadPath);
+
+        Path savePath = uploadPath.resolve(fileName);
+        file.transferTo(savePath);
+
+        return "/static/profile/" +fileName;
+    }
+
+    //파일의 확장자를 추출
+    private String getExtension(String originalFilename){
+        return originalFilename.substring(originalFilename.lastIndexOf("."));
     }
 }
