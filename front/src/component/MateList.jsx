@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 
 
-function FriendList({id, name}) {
+function MateList({id, name}) {
     const [showModal, setShowModal] = useState(false);
     const toggleModal = () => {
         setShowModal(!showModal);
@@ -41,4 +41,4 @@ function FriendList({id, name}) {
     );
 }
 
-export default FriendList;
+export default MateList;

@@ -2,12 +2,14 @@ import React , { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom"; 
 import "./style.css";
 import file_icon from "./assets/attach_file_icon.png";
-import ChatBubble from "./component/ChatBubble";
-import FriendList from "./component/FriendList";
-import RoomList from "./component/RoomList";
-import {chatlog} from "./Testdata/testdata_chat";
-import {friendlist} from "./Testdata/testdata_friendlist";
-import {rooms} from "./Testdata/testdata_roomlist";
+import ChatBubble from "./component/ChatBubble"; //말풍선 컴포넌트
+import FriendList from "./component/FriendList"; // 친구목록 컴포넌트
+import MateList from "./component/MateList"; // 참여자 목록 보여주는 컴포넌트
+import RoomList from "./component/RoomList"; // 방 목록 보여주는 컴포넌트
+import {chatlog} from "./Testdata/testdata_chat"; //대화목록
+import {friendlist} from "./Testdata/testdata_friendlist"; //친구목록
+import {roomates} from "./Testdata/testdata_roomates"; // 참여자 목록
+import {rooms} from "./Testdata/testdata_roomlist"; // 방 목록
 
 
 
@@ -17,12 +19,30 @@ export const Main = () => {
     const [isHovered, setIsHovered] = useState(false)
     const [ismymenuModalOpened, setmymenuModalOpened] = useState(false)
     const [isRoomAddModalOpened, setRoomAddModalOpened] = useState(false)
+    const [isExitModalOpened, setExitModalOpened] = useState(false)
+    const [friendlistswitched, setfriendlistswitched] = useState(true)
+    const [inviteList, setInviteList] = useState([]); //방 생성시초대목록
     const [textbox, setTextbox] = useState("");
+    const toggleInviteFriend = (friend) => {
+        setInviteList((prev) => {
+          const exists = prev.find((f) => f.id === friend.id);
+          return exists
+            ? prev.filter((f) => f.id !== friend.id) // 이미 있으면 제거
+            : [...prev, friend]; // 없으면 추가
+        });
+      };
+    //각 팝업창 on/off관리
     const ToggleMyMenu = () => {
         setmymenuModalOpened(!ismymenuModalOpened);
     };
     const ToggleAddRoom = () => {
         setRoomAddModalOpened(!isRoomAddModalOpened);
+    };
+    const ToggleExitRoom = () => {
+        setExitModalOpened(!isExitModalOpened);
+    };
+    const ToggleFriendListSwitch = () => {
+        setfriendlistswitched(!friendlistswitched);
     };
 
     const navigate = useNavigate();
@@ -44,16 +64,42 @@ export const Main = () => {
                     name = {room.name}
                 />
                 ))}
-                <button class = "left-banner-room-add-button" onClick = {ToggleAddRoom}>ADD</button>
+                <button class = "left-banner-room-add-button" onClick = {ToggleAddRoom}>추가</button>
                 {isRoomAddModalOpened && (
                     <div class = "modal-overlay">
                         <div class = "left-banner-room-add-modal-container">
-                            <div class = "left-banner-room-add-modal-text">방을 추가할까요</div>
-                            <div class = "left-banner-room-add-modal-close" onClick = {ToggleAddRoom}><img
+                            <div class = "left-banner-room-add-modal-text">채팅방 추가하기</div>
+                            <div class = "left-banner-room-add-modal-close" onClick = {ToggleAddRoom}>
+                                <img
                                 src={require(`./assets/close.png`)}
                                 alt="close icon"
                                 className="close-icon"
                             /> </div>
+                            <div class = "left-banner-room-add-friendlist-container">
+                            {friendlist.map((friend) => (
+                                <div
+                                    key={friend.id}
+                                    className="friend-list-item"
+                                    onClick={() => toggleInviteFriend(friend)}
+                                >
+                                {friend.name}
+                            </div>
+                            ))}
+                            </div>
+
+                            <img src={require(`./assets/right.png`)}alt="arrow icon" className="arrow-icon"/> 
+                            
+                            <div class = "left-banner-room-add-invitelist-container">
+                            {inviteList.map((friend) => (
+                                <div
+                                    key={friend.id}
+                                    className="invite-list-item"
+                                    onClick={() => toggleInviteFriend(friend)}
+                                >
+                                    {friend.name}
+                                </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}
@@ -80,10 +126,7 @@ export const Main = () => {
                     </div>
                 </div>
             )}
-           
-
-            
-            
+         
         </div>
 
         <div class = "bottom-banner">
@@ -96,6 +139,17 @@ export const Main = () => {
             </button>
         </div>
         <div class = "center-banner">
+            <div class = "center-banner-top">
+                <div class = "center-banner-top-text">채팅방제목</div>
+                <div class = "center-banner-top-room-exit-button" onClick={ToggleExitRoom}>
+                    <img
+                        src={require(`./assets/door.png`)}
+                        alt="close icon"
+                        className="close-icon"
+                    />
+                </div>
+            </div>
+            
             {chatlog.map((chat, index) => (
                 <ChatBubble
                     key = {index}
@@ -105,18 +159,36 @@ export const Main = () => {
                 />
             ))}
         </div>
+        {isExitModalOpened && (
+                <div class = "modal-overlay">
+                    <div class = "exit-modal-container">
+                        <div class = "exit-modal-container-text">방에서 나가시겠습니까?</div>
+                        <div class = "exit-modal-button-1">네</div>
+                        <div class = "exit-modal-button-2" onClick = {ToggleExitRoom}>아니오</div>
+                    </div>
+                </div>
+        )}
+
+
         <div class = "right-banner">
             <div class = "title-friend-list-container">
-                <h3 class = "title-friend-list">친구목록</h3>
+                <h3 class = "title-friend-list">{friendlistswitched? ("친구목록"):("참가자")}</h3>
+                <div class = "title-switch-button" onClick = {ToggleFriendListSwitch}>
+                    <img
+                        src={require(`./assets/switch.png`)}
+                        alt="close icon"
+                        className="close-icon"
+                    />
+                </div>
             </div>
             
-            <div class = "right-banner-friend-list-zone">
-                {friendlist.map((friendlist, index) => (
-                    <FriendList
-                        key = {index}
-                        id = {friendlist.id}
-                        name = {friendlist.name}
-                    />
+            <div className="right-banner-friend-list-zone">
+             {friendlistswitched
+                ? friendlist.map((friend, index) => (
+                    <FriendList key={index} id={friend.id} name={friend.name} />
+                ))
+                : roomates.map((mate, index) => (
+                    <MateList key={index} id={mate.id} name={mate.name} />
                 ))}
             </div>
             
