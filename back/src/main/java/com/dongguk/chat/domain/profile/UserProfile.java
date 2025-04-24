@@ -24,11 +24,11 @@ public class UserProfile {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static UserProfile create(ProfileReqDto profileReqDto, User user){
+    public static UserProfile create(ProfileReqDto profileReqDto, User user, String imageUrl){
         UserProfile profile = UserProfile.builder()
                 .user(user)
                 .nickname(profileReqDto.getNickname())
-                .imageUrl(profileReqDto.getImageUrl())
+                .imageUrl(imageUrl)
                 .build();
         user.updateUserProfile(profile);
         return profile;
