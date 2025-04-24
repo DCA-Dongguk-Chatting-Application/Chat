@@ -6,6 +6,16 @@ import "./style.css";
 
 
 export const Setting = () => {
+  const fileInputRef = useRef(null);
+
+  const handleProfilePicUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      alert(`선택한파일: ${file.name}`);
+    
+    }
+  };
+
   const [showModal, setShowModal] = useState(false);
       const toggleModal = () => {
           setShowModal(!showModal);
@@ -19,7 +29,7 @@ export const Setting = () => {
     return (
       <div class = "background">
           <div class = "setting-profile-container">
-              <div class = "setting-profile-picture"></div>
+              <div class = "setting-profile-picture" onClick={() => fileInputRef.current.click()}>클릭하여 업로드</div>
               <h3 class = "setting-profile-info-text">프로필 정보</h3>
               <h1 class = "setting-nick">아아아ㄴ</h1>
               
@@ -86,7 +96,15 @@ export const Setting = () => {
             </div>
           )}
           
-          
+
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleProfilePicUpload}
+          />
+
       </div>
     );
 };
