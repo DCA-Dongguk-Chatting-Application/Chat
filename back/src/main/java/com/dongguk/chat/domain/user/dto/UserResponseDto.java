@@ -19,6 +19,7 @@ public class UserResponseDto {
 
     private String email;
 
+
     public static UserResponseDto fromUser(User user){
         return UserResponseDto.builder()
                 .id(user.getId())

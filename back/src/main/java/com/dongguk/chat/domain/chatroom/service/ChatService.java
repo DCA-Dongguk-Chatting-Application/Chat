@@ -1,10 +1,15 @@
 package com.dongguk.chat.domain.chatroom.service;
 
 
+import com.dongguk.chat.domain.chatroom.dto.ChatRoomCreateDto;
+import com.dongguk.chat.domain.chatroom.dto.ChatRoomGroupCreateDto;
+import com.dongguk.chat.domain.chatroom.dto.ChatRoomUpgradeDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
@@ -75,5 +80,58 @@ public class ChatService {
     // 1대1 채팅방 찾기
     public Optional<ChatRoom> find1to1Room(Long myId, Long partnerId) {
         return chatRoomRepository.find1to1Room(myId, partnerId);
+    }
+
+    //유저가 속해있는 채팅방 찾기
+    public List<ChatRoom> getMyChatRooms(Long userId) {
+        return chatRoomRepository.findChatRoomsByUserId(userId);
+    }
+
+    //채팅방 안에 인원 파악
+    public List<User> getParticipantInRoom(Long roomId) {
+        return chatRoomRepository.findParticipantsByRoomId(roomId);
+    }
+
+    //1대1 채팅방을 1대N 채팅방으로 업그레이드
+    public ChatRoom upgradeToGroupChatRoom(ChatRoomUpgradeDto dto){
+        ChatRoom originalRoom = chatRoomRepository.findById(dto.getOriginalRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("기존 채팅방 없음"));
+
+        //기존 참여자 복사
+        Set<User> participants = new HashSet<>(originalRoom.getParticipants());
+
+        // 새 참여자 추가
+        for (Long userId : dto.getNewUserIds()) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException(" 사용자 없음 "));
+
+            participants.add(user);
+        }
+
+        ChatRoom newGroupRoom = new ChatRoom();
+        newGroupRoom.setRoomName(dto.getRoomName()); //룸네임 변경 필요
+        newGroupRoom.setGroup(true);
+        newGroupRoom.setParticipants(participants);
+
+        return chatRoomRepository.save(newGroupRoom);
+    }
+
+
+    // 1대N 채팅방 개설
+    public ChatRoom createGroupChatRoom(ChatRoomGroupCreateDto dto) {
+        Set<User> participants = new HashSet<>();
+
+        for (Long userId : dto.getUserIds()) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+            participants.add(user);
+        }
+
+        ChatRoom groupRoom = new ChatRoom();
+        groupRoom.setRoomName(dto.getRoomName());
+        groupRoom.setGroup(true);
+        groupRoom.setParticipants(participants);
+
+        return chatRoomRepository.save(groupRoom);
     }
 }
