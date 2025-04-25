@@ -1,6 +1,8 @@
 import React , { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom"; 
 import "./style.css";
+import RequestList from "./component/RequestList"; //친구신청목록 컴포넌트
+import {friendRequests} from "./Testdata/testdata_friendrequest"; // 친신 목록
 
 
 
@@ -15,10 +17,20 @@ export const Setting = () => {
     
     }
   };
-
+//프로필수정
   const [showModal, setShowModal] = useState(false);
       const toggleModal = () => {
           setShowModal(!showModal);
+      };
+//친구관리
+  const [showFriendModal, setShowFriendModal] = useState(false);
+  const  toggleFriendModal = () => {
+          setShowFriendModal(!showFriendModal);
+      };
+//친추 받는창/거는창 전환
+  const [showFriendModalSwitch, setShowFriendModalSwitch] = useState(false);
+  const  toggleFriendModalSwitch = () => {
+              setShowFriendModalSwitch(!showFriendModalSwitch);
       };
  
   const navigate = useNavigate();
@@ -65,6 +77,14 @@ export const Setting = () => {
                 className="previous-icon"
                 /> 
               </div>
+
+              <div class = "setting-friend-button" onClick = {toggleFriendModal}>
+                <img
+                src={require(`./assets/friends.png`)}
+                alt="previous icon"
+                className="friend-icon"
+                /> 
+              </div>
           
           </div>
 
@@ -96,6 +116,43 @@ export const Setting = () => {
             </div>
           )}
           
+        {showFriendModal && (
+          <div class = "modal-overlay">
+            <div class = "modal-setting-friend-container">
+              <div class = "modal-setting-friend-close" onClick={toggleFriendModal}>
+                <img
+                  src={require(`./assets/close.png`)}
+                  alt="close icon"
+                  className="close-icon"
+                  />
+              </div>
+              {showFriendModalSwitch? (
+                <div>
+                  <div class = "setting-mode-1-text">친구 신청하기</div>
+                  <div class = "setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청받기</div>
+                  <input class = "setting-mode-searchbox" placeholder = "userID 입력"/>
+                  <div class = "setting-mode-confirm">검색</div>
+                  <div class = "setting-searched-name">여기에 검색된 이름표시</div>
+                  <div class = "setting-mode-confirm-ok">친구신청 보내기</div>
+                </div>
+                ) : (
+                <div>
+                  <div class = "setting-mode-1-text">받은 친구신청</div>
+                  <div class = "setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청하기</div>
+                  <div class = "setting-mode-requested-container">
+                  {friendRequests.map((req, index) => (
+                    <RequestList
+                    key = {index}
+                    id = {req.id}
+                    name = {req.name}
+                    />
+                ))}
+                  </div>
+                </div>)}
+
+            </div>
+          </div>
+        )}
 
           <input
             type="file"

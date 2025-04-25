@@ -860,6 +860,19 @@
 
 }
 
+.setting-friend-button{
+    width : 50px;
+    height : 50px;
+    font-size : 20px;
+    position : absolute;
+    top : 10px;
+    right : 80px;
+    align-items : center;
+    justify-content: center;
+    background-color : #505050;
+
+}
+
 .edit-icon{
     width : 40px;
     height : 40px;
@@ -868,6 +881,12 @@
 }
 
 .previous-icon{
+    width : 40px;
+    height : 40px;
+    pointer-events : none;
+}
+
+.friend-icon{
     width : 40px;
     height : 40px;
     pointer-events : none;
@@ -993,4 +1012,149 @@
     font-size : 26px;
     border : none;
     border-radius : 5px;
+}
+
+.modal-setting-friend-container{
+    background :rgb(105, 104, 104);
+    width : 700px;
+    height : 500px;
+    border-radius : 10px;
+    display : flex;
+    position : relative;
+}
+
+.modal-setting-friend-close{
+    position : absolute;
+    top : 10px;
+    right : 10px;
+    width : 40px;
+    height : 40px;
+}
+
+.setting-mode-1-text{
+    position : absolute;
+    top : 10%;
+    left : 50%;
+    font-size : 20px;
+    transform : translate(-50%, 0%);
+}
+
+.setting-mode-switch-button{
+    position : absolute;
+    top : 10%;
+    left : 10%;
+    font-size : 15px;
+    transform : translate(-50%, 0%);
+    top : 20px;
+    padding : 5px;
+    border-radius: 5px;
+    width : 100px;
+    background-color: white;
+    text-align: center;
+}
+
+.setting-mode-switch-button:hover{
+    border : 2px solid black;
+}
+
+.setting-mode-searchbox{
+    position : absolute;
+    top : 40%;
+    left : 40%;
+    font-size : 15px;
+    transform : translate(-50%, 0%);
+    padding : 5px;
+    border-radius: 5px;
+    width : 240px;
+    background-color: white;
+    text-align: center;
+}
+
+.setting-mode-confirm{
+    position : absolute;
+    top : 40%;
+    left : 70%;
+    font-size : 15px;
+    transform : translate(-50%, 0%);
+    padding : 5px;
+    border-radius: 5px;
+    width : 60px;
+    height: 20px;
+    background-color: white;
+    text-align: center;
+}
+
+.setting-searched-name{
+    position : absolute;
+    top : 60%;
+    left : 50%;
+    font-size : 15px;
+    transform : translate(-50%, 0%);
+}
+
+.setting-mode-confirm-ok{
+    position : absolute;
+    top : 80%;
+    left : 50%;
+    font-size : 15px;
+    transform : translate(-50%, 0%);
+    padding : 5px;
+    border-radius: 5px;
+    width : 160px;
+    height: 20px;
+    background-color: white;
+    text-align: center;
+}
+
+.setting-mode-requested-container{
+    position : absolute;
+    top : 25%;
+    left : 50%;
+    transform: translate(-50%, 0%);
+    width : 300px;
+    height : 260px;
+    border : 2px solid black;
+    border-radius : 5px;
+    overflow-y: auto;
+}
+
+.requestlist-container{
+    width  : 95%;
+    height : 25px;
+    background-color : rgb(131, 126, 126);
+    margin : 5px;
+    border-radius : 5px;
+    display : flex;
+    align-items: center;
+    
+}
+
+.request-o{
+    width : 20px;
+    height : 20px;
+    background-color: white;
+    border-radius : 5px;
+    display : flex;
+    align-items: center;
+    justify-content: center;
+    position : absolute;
+    right : 50px;
+}
+
+.request-x{
+    width : 20px;
+    height : 20px;
+    background-color: white;
+    border-radius : 5px;
+    display : flex;
+    align-items: center;
+    justify-content: center;
+    position : absolute;
+    right : 20px;
+}
+
+.request-name{
+    position: absolute;
+    left :
+    20px;
 }
