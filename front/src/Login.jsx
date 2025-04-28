@@ -19,9 +19,11 @@ export const Login = () => {
     const handleRegister = async () => {
         try {
             const response = await axios.post("/api/user", {
-              ID: idRegister,
-              name: nameRegister,
+              
+              email: idRegister,
+              username: nameRegister,
               password: pwRegister,
+              phoneNumber : "010-0000-0000" 
             });
     
             alert(response.data);
@@ -31,11 +33,11 @@ export const Login = () => {
         }
       };
 
-      const handleLogin = async () => {
+    const handleLogin = async () => {
         try {
-            const response = await axios.post("/api/login", {
-                ID: idLogin,
-                password: pwLogin,
+            const response = await axios.post("/api/auth/login", {
+                userLoginId: idLogin,
+                userPassword: pwLogin,
             });
             
             alert('로그인 성공!');
