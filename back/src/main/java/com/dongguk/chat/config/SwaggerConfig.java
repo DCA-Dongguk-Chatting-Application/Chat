@@ -27,8 +27,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI(){
         return new OpenAPI()
-                .info(new Info().title("MYS DATABASE TRANSACTION API DOCUMENT")
-                        .description("TODO 웹 애플리케이션의 데이터베이스 트랜잭션을 관리하는 API입니다.")
+                .info(new Info().title("Dongguk Chatting API DOCUMENT")
+                        .description("Dongguk Chatting API입니다.")
                         .version("1.0.0"))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
