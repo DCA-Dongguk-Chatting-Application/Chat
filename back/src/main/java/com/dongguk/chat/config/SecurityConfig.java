@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,13 +44,14 @@ public class SecurityConfig {
     public LoginAuthenticationFilter loginAuthenticationFilter(AuthenticationManager authenticationManager){
         LoginAuthenticationFilter loginAuthenticationFilter = new LoginAuthenticationFilter(jwtUtil, responseWrapper);
         loginAuthenticationFilter.setAuthenticationManager(authenticationManager);
-        loginAuthenticationFilter.setFilterProcessesUrl("/api/auth/login");
+        loginAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         return loginAuthenticationFilter;
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity, LoginAuthenticationFilter loginAuthenticationFilter) throws Exception{
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session ->session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests ->
@@ -62,7 +64,7 @@ public class SecurityConfig {
                                         "/api-docs",
                                         "/api-docs/**",
                                         "/v3/api-docs/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                 .requestMatchers("/**").permitAll()
                                 .anyRequest().authenticated());
 

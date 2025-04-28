@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/profile")
+@RequestMapping("/profile")
 @RequiredArgsConstructor
 @Tag(name = "User Profile API", description = "사용자 프로필 생성 및 조회 API")
 public class ProfileController {
