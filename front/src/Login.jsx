@@ -1,6 +1,7 @@
 import React , { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom"; 
 import "./style.css";
+import axios from 'axios'
 
 
 export const Login = () => {
@@ -11,7 +12,38 @@ export const Login = () => {
     const [idRegister, setIdRegister] = useState("");
     const [pwRegister, setPwRegister] = useState("");
     const [nameRegister, setNameRegister] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+
     
+
+    const handleRegister = async () => {
+        try {
+            const response = await axios.post("/api/user", {
+              ID: idRegister,
+              name: nameRegister,
+              password: pwRegister,
+            });
+    
+            alert(response.data);
+            navigate("/");
+        } catch (error) {
+          setErrorMessage(error.response?.data || "회원가입 실패");
+        }
+      };
+
+      const handleLogin = async () => {
+        try {
+            const response = await axios.post("/api/login", {
+                ID: idLogin,
+                password: pwLogin,
+            });
+            
+            alert('로그인 성공!');
+            navigate("/main"); 
+        } catch (error) {
+            setErrorMessage(error.response?.data || "로그인 실패");
+        }
+    };
     
     const togglePanel = () => {
         setIsRight(prev => !prev);
@@ -49,7 +81,7 @@ export const Login = () => {
                 <input class = "login-pw-textbox" 
                     placeholder = "PW"
                     onChange={(e) => setPwLogin(e.target.value)}></input>
-                <button class = "login-confirm" onClick={goToMain}>확인</button>
+                <button class = "login-confirm" onClick={handleLogin}>확인</button>
              </div>
 
             <div class = "register-zone">
@@ -64,7 +96,7 @@ export const Login = () => {
                     placeholder = "이름"
                      onChange={(e) => setNameRegister(e.target.value)}>
                 </input>
-                <button class = "register-confirm" onClick={goToLogin}>확인</button>
+                <button class = "register-confirm" onClick={handleRegister}>확인</button>
             </div>
         
         

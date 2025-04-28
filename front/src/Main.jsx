@@ -11,7 +11,8 @@ import {friendlist} from "./Testdata/testdata_friendlist"; //친구목록
 import {roomates} from "./Testdata/testdata_roomates"; // 참여자 목록
 import {rooms} from "./Testdata/testdata_roomlist"; // 방 목록
 
-
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 
 
 
@@ -24,8 +25,10 @@ export const Main = () => {
     const [inviteList, setInviteList] = useState([]); //방 생성시초대목록
     const [searchTerm, setSearchTerm] = useState("");//방 생성시 친구검색색필터
     const [textbox, setTextbox] = useState("");//채팅칸 입력내용 받음
+    const [chatlog, setChatLog] = useState([]);
     const fileInputRef = useRef(null);
-
+    const clientRef = useRef(null);
+    const roomId = 1;
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -33,6 +36,41 @@ export const Main = () => {
             // 여기에 서버 연결 api 추가가
         }
     };
+//과거 채팅기록 로딩딩
+    useEffect(() => {
+        fetch(`/sub/chatroom/${roomId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                setChatLog(data);
+            })
+            .catch((err) => console.error("채팅 기록 불러오기 실패", err));
+    }, [roomId]);
+//이후 웹소켓으로 실시간수신신
+    useEffect(() => {
+        const socket = new SockJS('/api/chatroom');
+        const client = new Client({
+            webSocketFactory: () => socket,
+            debug: (str) => console.log(str),
+            onConnect: () => {
+                console.log('웹소켓 연결됨');
+                client.subscribe(`/topic/chat/room/${roomId}`, (message) => {
+                    const newMessage = JSON.parse(message.body);
+                    setChatLog((prevChatLog) => [...prevChatLog, newMessage]);
+                });
+            },
+            onStompError: (frame) => {
+                console.error('STOMP 오류', frame);
+            },
+        });
+        client.activate();
+        clientRef.current = client;
+
+        return () => {
+            client.deactivate();
+        };
+    }, [roomId]);
+
+
     const toggleInviteFriend = (friend) => {//방 생성시 친구초대대
         setInviteList((prev) => {
           const exists = prev.find((f) => f.id === friend.id);
