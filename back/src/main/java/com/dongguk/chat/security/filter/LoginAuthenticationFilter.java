@@ -1,7 +1,9 @@
 package com.dongguk.chat.security.filter;
 
+import com.dongguk.chat.domain.user.User;
 import com.dongguk.chat.security.dto.JwtToken;
 import com.dongguk.chat.security.dto.UserLoginDto;
+import com.dongguk.chat.security.service.UserDetailsImpl;
 import com.dongguk.chat.util.JwtUtil;
 import com.dongguk.chat.util.ResponseWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,15 +50,9 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String userId = userDetails.getUsername();
+        String userLoginId = userDetails.getUsername();
 
-        String accessToken = jwtUtil.generateAccessToken(userId);
-        Users users = userDetails.getUsers();
-
-        JwtToken jwtToken = JwtToken.builder()
-                .accessToken(accessToken)
-                .userResponseDto(UserResponseDto.of(users))
-                .build();
+        JwtToken jwtToken = jwtUtil.generateToken(userLoginId);
 
         responseWrapper.convertObjectToResponse(response, jwtToken);
     }
@@ -65,7 +61,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     protected void unsuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response,
                                               AuthenticationException failed) throws IOException, ServletException {
-        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.USER_NOT_FOUND_ERROR);
-        responseWrapper.convertObjectToResponse(response, errorResponse);
+//        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.USER_NOT_FOUND_ERROR);
+//        responseWrapper.convertObjectToResponse(response, errorResponse);
     }
 }
