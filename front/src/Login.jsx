@@ -19,11 +19,11 @@ export const Login = () => {
     const handleRegister = async () => {
         try {
             const response = await axios.post("/api/user", {
-              
-              email: idRegister,
-              username: nameRegister,
-              password: pwRegister,
-              phoneNumber : "010-0000-0000" 
+            
+            email: idRegister,
+            username: nameRegister,
+            password: pwRegister,
+            phoneNumber : "010-0000-0000"
             });
     
             alert(response.data);
