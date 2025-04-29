@@ -65,8 +65,7 @@ public class SecurityConfig {
                                         "/api-docs/**",
                                         "/v3/api-docs/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                                .requestMatchers("/**").permitAll()
-                                .anyRequest().authenticated());
+                                .requestMatchers("/**").permitAll());
 
         httpSecurity.addFilterBefore(loginAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();

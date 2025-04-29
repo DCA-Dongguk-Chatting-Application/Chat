@@ -20,7 +20,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/portfolio").withSockJS();
+        registry.addEndpoint("/portfolio").setAllowedOriginPatterns("*")
+                .withSockJS();
     }
     /**
      * STOMP 메시지 브로커를 설정한다.
