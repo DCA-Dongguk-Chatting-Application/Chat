@@ -1,6 +1,7 @@
 package com.dongguk.chat.security.filter;
 
 import com.dongguk.chat.domain.user.User;
+import com.dongguk.chat.domain.user.dto.UserResponseDto;
 import com.dongguk.chat.security.dto.JwtToken;
 import com.dongguk.chat.security.dto.UserLoginDto;
 import com.dongguk.chat.security.service.UserDetailsImpl;
@@ -52,7 +53,12 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String userLoginId = userDetails.getUsername();
 
-        JwtToken jwtToken = jwtUtil.generateToken(userLoginId);
+        String accessToken = jwtUtil.generateAccessToken(userLoginId);
+        JwtToken jwtToken = JwtToken.builder()
+                .accessToken(accessToken)
+                .userResponseDto(UserResponseDto.fromUser(userDetails.getUsers()))
+                .build();
+
 
         responseWrapper.convertObjectToResponse(response, jwtToken);
     }

@@ -22,4 +22,8 @@ public class UserService {
         User savedUser = userRepository.save(reqUser);
         return UserResponseDto.fromUser(savedUser);
     }
+
+    public User getUserInfo(String username){
+        return userRepository.findUserByUsername(username).get();
+    }
 }
