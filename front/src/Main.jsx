@@ -48,7 +48,6 @@ export const Main = () => {
         }
     };
 
-// 유저정보 가져오기
 // ✅ 1. 유저 정보 가져오기
 useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -360,7 +359,7 @@ useEffect(() => {
                     <FriendList key={index} id={friend.userId} name={friend.userId} />
                 ))
                 : roomates.map((mate, index) => (
-                    <MateList key={index} id={mate.user.id} name={mate.profile.userId} />
+                    <MateList key={index} id={mate.user.id} name={mate.user.id} />
                 ))}
             </div>
             
