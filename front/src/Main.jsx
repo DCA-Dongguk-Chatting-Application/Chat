@@ -305,7 +305,7 @@ useEffect(() => {
             
                
         </div>
-       {roomId && (
+       {roomId ? (
         <div class = "center-banner" ref = {chatContainerRef}>
             <div class = "center-banner-top">
                 <div class = "center-banner-top-text">{roomName}</div>
@@ -327,6 +327,12 @@ useEffect(() => {
                 />
             ))}
         </div>
+       ) : (
+        <div class = "center-banner">
+            <div class = "center-banner-guide-1">현재 선택한 채팅방이 없습니다</div>
+            <div class = "center-banner-guide-2">좌측에서 방을 만들거나 선택하세요</div>
+        </div>
+
        )}
         
         {isExitModalOpened && (
@@ -359,7 +365,7 @@ useEffect(() => {
                     <FriendList key={index} id={friend.userId} name={friend.userId} />
                 ))
                 : roomates.map((mate, index) => (
-                    <MateList key={index} id={mate.user.id} name={mate.user.id} />
+                    <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} />
                 ))}
             </div>
             

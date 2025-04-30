@@ -285,6 +285,24 @@
     margin-top : 60px;
 }
 
+.center-banner-guide-1{
+    position : absolute;
+    color : white;
+    font-size : 50px;
+    top : 40%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+}
+
+.center-banner-guide-2{
+    position : absolute;
+    color : white;
+    font-size : 20px;
+    top : 65%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+}
+
 .center-banner-top{
     height : 60px;
     overflow-y : auto;
