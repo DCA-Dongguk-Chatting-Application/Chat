@@ -30,13 +30,13 @@ export const Main = () => {
     const [rooms, setRooms] = useState([]);//방목록
     const [friendlist, setFriendList] = useState([]);//친구목록
     const [roomates, setRoomatesList] = useState([]);//참여자목록
-    const [roomName, setRoomName] = useState("기본값")//방 제목
+    const [roomName, setRoomName] = useState("방을 선택하세요")//방 제목
     const fileInputRef = useRef(null);
     const clientRef = useRef(null);
     const chatContainerRef = useRef(null);
-    const [roomId, setRoomId] = useState("1");//임시
-    //const userId = parseInt(localStorage.getItem("userId"));
-    const userId = 1;
+    const [roomId, setRoomId] = useState("");//임시
+    const userId = parseInt(localStorage.getItem("userId"));
+    //const userId = 1;
 //파일 업로드  
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -297,6 +297,7 @@ useEffect(() => {
             
                
         </div>
+       {roomId && (
         <div class = "center-banner" ref = {chatContainerRef}>
             <div class = "center-banner-top">
                 <div class = "center-banner-top-text">{roomName}</div>
@@ -318,6 +319,8 @@ useEffect(() => {
                 />
             ))}
         </div>
+       )}
+        
         {isExitModalOpened && (
                 <div class = "modal-overlay">
                     <div class = "exit-modal-container">
