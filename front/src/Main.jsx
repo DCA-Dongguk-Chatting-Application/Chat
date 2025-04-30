@@ -13,6 +13,7 @@ import {rooms} from "./Testdata/testdata_roomlist"; // 방 목록
 import axios from 'axios'
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
+import { GetUserInfo }  from "./component/UserInfo"
 
 
 
@@ -45,6 +46,17 @@ export const Main = () => {
             // 여기에 서버 연결 api 추가가
         }
     };
+
+// 유저정보 가져오기
+useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        try {
+            const userInfo = GetUserInfo(token);
+            console.log("유저 정보:", userInfo);
+        } catch (err) {
+            alert("유저 정보를 불러오지 못했습니다.");
+        }
+})
 //과거 채팅기록 로딩딩
 useEffect(() => {
     axios.get(`/api/chatroom/${roomId}/messages`)
