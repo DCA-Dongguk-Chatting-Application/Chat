@@ -1,10 +1,11 @@
 import React, { useContext, useState } from "react";
 
 
-function RoomList({id, name}) {
+function RoomList({id, name, onClick}) {
     const [showModal, setShowModal] = useState(false);
         const toggleModal = () => {
             setShowModal(!showModal);
+            onClick(id,name);
         };
     
    

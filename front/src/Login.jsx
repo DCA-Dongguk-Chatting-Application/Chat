@@ -41,8 +41,13 @@ export const Login = () => {
                 userPassword: pwLogin,
             });
             const accessToken = response.data.accessToken;
+            const user = response.data.userResponseDto;
             if (response.status === 200 && accessToken) {
-                
+                localStorage.setItem("accessToken", accessToken);
+                localStorage.setItem("userId", user.id);
+                localStorage.setItem("username", user.username);
+                localStorage.setItem("userEmail", user.email);
+             
                 
                 alert("로그인 성공!");
                 navigate("/main");

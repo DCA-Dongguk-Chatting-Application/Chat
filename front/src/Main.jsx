@@ -17,6 +17,7 @@ import { Client } from "@stomp/stompjs";
 
 
 export const Main = () => {
+    
     const [isHovered, setIsHovered] = useState(false)
     const [ismymenuModalOpened, setmymenuModalOpened] = useState(false)
     const [isRoomAddModalOpened, setRoomAddModalOpened] = useState(false)
@@ -29,11 +30,13 @@ export const Main = () => {
     const [rooms, setRooms] = useState([]);//방목록
     const [friendlist, setFriendList] = useState([]);//친구목록
     const [roomates, setRoomatesList] = useState([]);//참여자목록
+    const [roomName, setRoomName] = useState("기본값")//방 제목
     const fileInputRef = useRef(null);
     const clientRef = useRef(null);
     const chatContainerRef = useRef(null);
-    const roomId = 1;//임시
-    const userId = 23;
+    const [roomId, setRoomId] = useState("1");//임시
+    //const userId = parseInt(localStorage.getItem("userId"));
+    const userId = 1;
 //파일 업로드  
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -56,12 +59,23 @@ useEffect(() => {
 useEffect(() => {
     axios.get(`/api/chatroom/list/${userId}`)
         .then((response) => {
-            setRooms(response.data); 
+            setRooms(response.data);     
         })
         .catch((error) => {
             console.error("방 목록 불러오기 실패", error);
         });
 }, []);
+//방 제목 로딩
+useEffect(() => {
+    axios.get(`/api/chatroom/list/${userId}`)
+        .then((response) => {
+            setRoomName(response.data.roomName); 
+            console.log(`방 + ${roomName}`);
+        })
+        .catch((error) => {
+            console.error("방 이름 불러오기 실패", error);
+        });
+}, [roomId]);
 //친구목록 로딩
 useEffect(() => {
     axios.get(`/api/friends/${userId}`)
@@ -84,7 +98,8 @@ useEffect(() => {
             console.error("참여자목록 불러오기 실패", error);
         });
 }, []);  
-    
+
+  
 //이후 웹소켓으로 실시간수신신
     useEffect(() => {
         const socket = new SockJS('/api/portfolio');
@@ -165,6 +180,11 @@ useEffect(() => {
       const goSetting = () => {
         navigate("/setting"); 
       };
+//방 클릭 시, 방의 아이디 이름 저장
+    const handleRoomClick = (id, name) => {
+        setRoomId(id);
+        setRoomName(name);
+    };
  
   
 
@@ -178,6 +198,7 @@ useEffect(() => {
                     key = {index}
                     id = {room.id}
                     name = {room.roomName}
+                    onClick={() => handleRoomClick(room.id, room.roomName)}
                 />
                 ))}
                 <button class = "left-banner-room-add-button" onClick = {ToggleAddRoom}>추가</button>
@@ -278,7 +299,7 @@ useEffect(() => {
         </div>
         <div class = "center-banner" ref = {chatContainerRef}>
             <div class = "center-banner-top">
-                <div class = "center-banner-top-text">채팅방제목</div>
+                <div class = "center-banner-top-text">{roomName}</div>
                 <div class = "center-banner-top-room-exit-button" onClick={ToggleExitRoom}>
                     <img
                         src={require(`./assets/door.png`)}
