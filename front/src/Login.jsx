@@ -12,6 +12,7 @@ export const Login = () => {
     const [idRegister, setIdRegister] = useState("");
     const [pwRegister, setPwRegister] = useState("");
     const [nameRegister, setNameRegister] = useState("");
+    const [phoneRegister, setPhoneRegister] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
     
@@ -23,7 +24,7 @@ export const Login = () => {
             username: idRegister,
             email: nameRegister,
             password: pwRegister,
-            phoneNumber : "010-0000-0000"
+            phoneNumber : phoneRegister
             });
             alert(idRegister + "로 회원가입");
             console.log(response.data);
@@ -101,8 +102,11 @@ export const Login = () => {
                     onChange={(e) => setPwRegister(e.target.value)}></input>
                 <input class = "register-name-textbox"
                     placeholder = "이름"
-                     onChange={(e) => setNameRegister(e.target.value)}>
-                </input>
+                     onChange={(e) => setNameRegister(e.target.value)}></input>
+                <input class = "register-phone-textbox"
+                    placeholder = "전화번호"
+                     onChange={(e) => setPhoneRegister(e.target.value)}></input>
+                
                 <button class = "register-confirm" onClick={handleRegister}>확인</button>
             </div>
         
