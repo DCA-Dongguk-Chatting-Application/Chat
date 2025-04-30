@@ -36,8 +36,9 @@ export const Main = () => {
     const clientRef = useRef(null);
     const chatContainerRef = useRef(null);
     const [roomId, setRoomId] = useState("");//임시
-    const userId = parseInt(localStorage.getItem("userId"));
-    //const userId = 1;
+    const [userInfo, setUserInfo] = useState(null);
+
+
 //파일 업로드  
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -48,95 +49,91 @@ export const Main = () => {
     };
 
 // 유저정보 가져오기
+// ✅ 1. 유저 정보 가져오기
 useEffect(() => {
-        const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken");
+    const fetchUserInfo = async () => {
         try {
-            const userInfo = GetUserInfo(token);
-            console.log("유저 정보:", userInfo);
+            const user = await GetUserInfo(token);
+            setUserInfo(user);
+            console.log("유저 정보:", user);
         } catch (err) {
             alert("유저 정보를 불러오지 못했습니다.");
         }
-})
-//과거 채팅기록 로딩딩
-useEffect(() => {
-    axios.get(`/api/chatroom/${roomId}/messages`)
-        .then((response) => {
-            setChatLog(response.data);
-        })
-        .catch((error) => {
-            console.error("채팅 기록 불러오기 실패", error);
-        });
-}, [roomId]);
-//방 목록 로딩딩
-useEffect(() => {
-    axios.get(`/api/chatroom/list/${userId}`)
-        .then((response) => {
-            setRooms(response.data);     
-        })
-        .catch((error) => {
-            console.error("방 목록 불러오기 실패", error);
-        });
+    };
+    fetchUserInfo();
 }, []);
-//방 제목 로딩
+
+// ✅ 2. 유저 정보를 기준으로 방 목록, 친구 목록
 useEffect(() => {
-    axios.get(`/api/chatroom/list/${userId}`)
-        .then((response) => {
-            setRoomName(response.data.roomName); 
-            console.log(`방 + ${roomName}`);
+    if (!userInfo) return;
+
+    // 방 목록 가져오기
+    axios.get(`/api/chatroom/list/${userInfo.id}`)
+        .then((res) => {
+            setRooms(res.data);
         })
-        .catch((error) => {
-            console.error("방 이름 불러오기 실패", error);
-        });
-}, [roomId]);
-//친구목록 로딩
-useEffect(() => {
-    axios.get(`/api/friends/${userId}`)
-        .then((response) => {
-            setFriendList(response.data);
+        .catch((err) => console.error("방 목록 불러오기 실패", err));
+
+    // 친구 목록 가져오기
+    axios.get(`/api/friends/${userInfo.id}`)
+        .then((res) => {
+            setFriendList(res.data);
             console.log("친구목록 부름");
         })
-        .catch((error) => {
-            console.error("친구 목록 불러오기 실패", error);
-        });
-}, []);  
-//참여자목록 로딩딩
+        .catch((err) => console.error("친구 목록 불러오기 실패", err));
+
+}, [userInfo]);
+
+// ✅ 3. roomId가 선택된 후 참여자 목록과 채팅 기록 가져오기
 useEffect(() => {
+    if (!roomId) return;
+
+    // 참여자 목록
     axios.get(`/api/chatroom/${roomId}/participants`)
-        .then((response) => {
-            setRoomatesList(response.data);
+        .then((res) => {
+            setRoomatesList(res.data);
             console.log("참여자목록 부름");
         })
-        .catch((error) => {
-            console.error("참여자목록 불러오기 실패", error);
-        });
-}, []);  
+        .catch((err) => console.error("참여자목록 불러오기 실패", err));
 
-  
-//이후 웹소켓으로 실시간수신신
-    useEffect(() => {
-        const socket = new SockJS('/api/portfolio');
-        
-        const client = new Client({
-            webSocketFactory: () => socket,
-            debug: (str) => console.log(str),
-            onConnect: () => {
-                console.log('웹소켓 연결됨');
-                client.subscribe(`/topic/chatroom/${roomId}`, (message) => {
-                    const newMessage = JSON.parse(message.body);
-                    setChatLog((prevChatLog) => [...prevChatLog, newMessage]);
-                });
-            },
-            onStompError: (frame) => {
-                console.error('STOMP 오류', frame);
-            },
-        });
-        client.activate();
-        clientRef.current = client;
+    // 과거 채팅기록
+    axios.get(`/api/chatroom/${roomId}/messages`)
+        .then((res) => {
+            setChatLog(res.data);
+        })
+        .catch((err) => console.error("채팅 기록 불러오기 실패", err));
 
-        return () => {
-            client.deactivate();
-        };
-    }, [roomId]);
+}, [roomId]);
+
+// ✅ 4. 웹소켓 연결
+useEffect(() => {
+    if (!roomId) return;
+
+    const socket = new SockJS('/api/portfolio');
+    const client = new Client({
+        webSocketFactory: () => socket,
+        debug: (str) => console.log(str),
+        onConnect: () => {
+            console.log('웹소켓 연결됨');
+            client.subscribe(`/topic/chatroom/${roomId}`, (message) => {
+                const newMessage = JSON.parse(message.body);
+                setChatLog(prev => [...prev, newMessage]);
+            });
+        },
+        onStompError: (frame) => {
+            console.error('STOMP 오류', frame);
+        },
+    });
+
+    client.activate();
+    clientRef.current = client;
+
+    return () => {
+        client.deactivate();
+    };
+}, [roomId]);
+
 //메시지 전송 버튼 동작
 function sendMessage() {
     
@@ -147,7 +144,7 @@ function sendMessage() {
     }
 
     const payload = {
-        sender: userId,
+        sender: userInfo.id,
         roomId: roomId,
         content: textbox
     };
