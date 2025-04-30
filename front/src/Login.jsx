@@ -16,32 +16,37 @@ export const Login = () => {
 
     
 
-    const handleRegister = async () => {
+    const handleRegister = async () => {//회원가입
         try {
             const response = await axios.post("/api/user", {
             
-            email: idRegister,
-            username: nameRegister,
+            username: idRegister,
+            email: nameRegister,
             password: pwRegister,
             phoneNumber : "010-0000-0000"
             });
-    
-            alert(response.data);
+            alert(idRegister + "로 회원가입");
+            console.log(response.data);
             navigate("/");
         } catch (error) {
           setErrorMessage(error.response?.data || "회원가입 실패");
         }
       };
 
-    const handleLogin = async () => {
+    const handleLogin = async () => {//로그인
         try {
             const response = await axios.post("/api/auth/login", {
                 userLoginId: idLogin,
                 userPassword: pwLogin,
             });
+            const accessToken = response.data.accessToken;
+            if (response.status === 200 && accessToken) {
+                
+                
+                alert("로그인 성공!");
+                navigate("/main");
+            }
             
-            alert('로그인 성공!');
-            navigate("/main"); 
         } catch (error) {
             setErrorMessage(error.response?.data || "로그인 실패");
         }

@@ -10,7 +10,7 @@ import {chatlog} from "./Testdata/testdata_chat"; //대화목록
 import {friendlist} from "./Testdata/testdata_friendlist"; //친구목록
 import {roomates} from "./Testdata/testdata_roomates"; // 참여자 목록
 import {rooms} from "./Testdata/testdata_roomlist"; // 방 목록
-
+import axios from 'axios'
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 
@@ -25,10 +25,16 @@ export const Main = () => {
     const [inviteList, setInviteList] = useState([]); //방 생성시초대목록
     const [searchTerm, setSearchTerm] = useState("");//방 생성시 친구검색색필터
     const [textbox, setTextbox] = useState("");//채팅칸 입력내용 받음
-    const [chatlog, setChatLog] = useState([]);
+    const [chatlog, setChatLog] = useState([]);//채팅내역 배열열
+    const [rooms, setRooms] = useState([]);//방목록
+    const [friendlist, setFriendList] = useState([]);//친구목록
+    const [roomates, setRoomatesList] = useState([]);//참여자목록
     const fileInputRef = useRef(null);
     const clientRef = useRef(null);
-    const roomId = 1;
+    const chatContainerRef = useRef(null);
+    const roomId = 1;//임시
+    const userId = 23;
+//파일 업로드  
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -37,23 +43,58 @@ export const Main = () => {
         }
     };
 //과거 채팅기록 로딩딩
-    useEffect(() => {
-        fetch(`/sub/chatroom/${roomId}`)
-            .then((res) => res.json())
-            .then((data) => {
-                setChatLog(data);
-            })
-            .catch((err) => console.error("채팅 기록 불러오기 실패", err));
-    }, [roomId]);
+useEffect(() => {
+    axios.get(`/api/chatroom/${roomId}/messages`)
+        .then((response) => {
+            setChatLog(response.data);
+        })
+        .catch((error) => {
+            console.error("채팅 기록 불러오기 실패", error);
+        });
+}, [roomId]);
+//방 목록 로딩딩
+useEffect(() => {
+    axios.get(`/api/chatroom/list/${userId}`)
+        .then((response) => {
+            setRooms(response.data); 
+        })
+        .catch((error) => {
+            console.error("방 목록 불러오기 실패", error);
+        });
+}, []);
+//친구목록 로딩
+useEffect(() => {
+    axios.get(`/api/friends/${userId}`)
+        .then((response) => {
+            setFriendList(response.data);
+            console.log("친구목록 부름");
+        })
+        .catch((error) => {
+            console.error("친구 목록 불러오기 실패", error);
+        });
+}, []);  
+//참여자목록 로딩딩
+useEffect(() => {
+    axios.get(`/api/chatroom/${roomId}/participants`)
+        .then((response) => {
+            setRoomatesList(response.data);
+            console.log("참여자목록 부름");
+        })
+        .catch((error) => {
+            console.error("참여자목록 불러오기 실패", error);
+        });
+}, []);  
+    
 //이후 웹소켓으로 실시간수신신
     useEffect(() => {
-        const socket = new SockJS('/api/chatroom');
+        const socket = new SockJS('/api/portfolio');
+        
         const client = new Client({
             webSocketFactory: () => socket,
             debug: (str) => console.log(str),
             onConnect: () => {
                 console.log('웹소켓 연결됨');
-                client.subscribe(`/topic/chat/room/${roomId}`, (message) => {
+                client.subscribe(`/topic/chatroom/${roomId}`, (message) => {
                     const newMessage = JSON.parse(message.body);
                     setChatLog((prevChatLog) => [...prevChatLog, newMessage]);
                 });
@@ -69,9 +110,36 @@ export const Main = () => {
             client.deactivate();
         };
     }, [roomId]);
+//메시지 전송 버튼 동작
+function sendMessage() {
+    
+    const client = clientRef.current;
+    if (!client || !client.connected) {
+        alert("STOMP에 연결되지 않았습니다. '채팅 연결' 버튼을 눌러주세요.");
+        return;
+    }
 
+    const payload = {
+        sender: userId,
+        roomId: roomId,
+        content: textbox
+    };
 
-    const toggleInviteFriend = (friend) => {//방 생성시 친구초대대
+    client.publish({
+        destination: "/app/chat.send",
+        body: JSON.stringify(payload)
+    });
+
+    setTextbox("");
+}
+//채팅 오면 자동으로 스크롤 아래로
+useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatlog]);
+//방 생성시 친구초대
+    const toggleInviteFriend = (friend) => {//방 생성시 친구초대
         setInviteList((prev) => {
           const exists = prev.find((f) => f.id === friend.id);
           return exists
@@ -109,7 +177,7 @@ export const Main = () => {
                 <RoomList
                     key = {index}
                     id = {room.id}
-                    name = {room.name}
+                    name = {room.roomName}
                 />
                 ))}
                 <button class = "left-banner-room-add-button" onClick = {ToggleAddRoom}>추가</button>
@@ -125,14 +193,14 @@ export const Main = () => {
                             /> </div>
                             <div class = "left-banner-room-add-friendlist-container">
                             {friendlist
-                            .filter((friend) =>friend.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                            .filter((friend) =>friend.nickname?.toLowerCase().includes(searchTerm.toLowerCase()))
                             .map((friend) => (
                                 <div
-                                    key={friend.id}
+                                    key={friend.userId}
                                     className="friend-list-item"
                                     onClick={() => toggleInviteFriend(friend)}
                                 >
-                                {friend.name}
+                                {friend.userId}
                             </div>
                             ))}
                             </div>
@@ -142,11 +210,11 @@ export const Main = () => {
                             <div class = "left-banner-room-add-invitelist-container">
                             {inviteList.map((friend) => (
                                 <div
-                                    key={friend.id}
+                                    key={friend.userId}
                                     className="invite-list-item"
                                     onClick={() => toggleInviteFriend(friend)}
                                 >
-                                    {friend.name}
+                                    {friend.userId}
                                 </div>
                                 ))}
                             </div>
@@ -185,8 +253,15 @@ export const Main = () => {
         <div class = "bottom-banner">
             <input class = "chat-textbox"
                 placeholder= "메시지 입력"
-                onChange={(e) => setTextbox(e.target.value)}></input>
-            <button class = "message-send-button">전송</button>
+                value = {textbox}
+                onChange={(e) => setTextbox(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault(); // enter키로 전송
+                      sendMessage();
+                    }
+                  }}></input>
+            <button class = "message-send-button" onClick={sendMessage}>전송</button>
             
             <button className="file-button" onClick={() => fileInputRef.current.click()}>
                 <img className="icon" src={file_icon} alt="로고" style={{ width: "30px" }} />
@@ -201,7 +276,7 @@ export const Main = () => {
             
                
         </div>
-        <div class = "center-banner">
+        <div class = "center-banner" ref = {chatContainerRef}>
             <div class = "center-banner-top">
                 <div class = "center-banner-top-text">채팅방제목</div>
                 <div class = "center-banner-top-room-exit-button" onClick={ToggleExitRoom}>
@@ -217,7 +292,7 @@ export const Main = () => {
                 <ChatBubble
                     key = {index}
                     sender = {chat.sender}
-                    message = {chat.message}
+                    message = {chat.content}
                     isMe = {chat.isMe}
                 />
             ))}
@@ -249,10 +324,10 @@ export const Main = () => {
             <div className="right-banner-friend-list-zone">
              {friendlistswitched
                 ? friendlist.map((friend, index) => (
-                    <FriendList key={index} id={friend.id} name={friend.name} />
+                    <FriendList key={index} id={friend.userId} name={friend.userId} />
                 ))
                 : roomates.map((mate, index) => (
-                    <MateList key={index} id={mate.id} name={mate.name} />
+                    <MateList key={index} id={mate.user.id} name={mate.profile.userId} />
                 ))}
             </div>
             

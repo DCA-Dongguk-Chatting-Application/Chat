@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./style.css";
 import RequestList from "./component/RequestList"; //친구신청목록 컴포넌트
 import {friendRequests} from "./Testdata/testdata_friendrequest"; // 친신 목록
-
+import axios from 'axios'
 
 
 
@@ -37,6 +37,22 @@ export const Setting = () => {
   const goBack = () => {
     navigate("/main"); 
   };
+
+//친구정보 불러오기
+const userId = 4;///임시시
+const [friendRequests, setFriendRequests] = useState([]);
+useEffect(() => {
+  axios.get(`/api/requests/${userId}`)
+      .then((response) => {
+          setFriendRequests(response.data);
+          console.log("친구신청목록 부름");
+      })
+      .catch((error) => {
+          console.error("친구신청목록 불러오기 실패", error);
+      });
+}, []);  
+  
+    
 
     return (
       <div class = "background">
