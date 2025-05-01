@@ -33,12 +33,6 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(decode);
     }
 
-    //Client에게 전송할 JwtToken 객체 생성
-    public JwtToken generateToken(String userId) {
-        return JwtToken.builder()
-                .accessToken(generateAccessToken(userId))
-                .build();
-    }
 
     public boolean validToken(String token){
         try{
@@ -57,11 +51,11 @@ public class JwtUtil {
         return false;
     }
 
-    public String generateAccessToken(String userId){
+    public String generateAccessToken(Long userId){
         log.info("{} ------------ Client AccessToken Generation", userId);
         Date date = new Date();
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(String.valueOf(userId))
                 .claim(authorizationKey, "ROLE_AUTH")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRED))

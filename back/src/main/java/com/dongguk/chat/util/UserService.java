@@ -1,4 +1,4 @@
-package com.dongguk.chat.domain.user.service;
+package com.dongguk.chat.util;
 
 import com.dongguk.chat.domain.user.User;
 import com.dongguk.chat.domain.user.dto.UserCreateReq;
@@ -23,7 +23,7 @@ public class UserService {
         return UserResponseDto.fromUser(savedUser);
     }
 
-    public User getUserInfo(String username){
-        return userRepository.findUserByUsername(username).get();
+    public User getUserInfo(Long userId){
+        return userRepository.findById(userId).get();
     }
 }

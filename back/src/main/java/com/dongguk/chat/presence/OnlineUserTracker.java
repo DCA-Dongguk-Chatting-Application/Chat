@@ -1,4 +1,4 @@
-package com.dongguk.chat.domain.user.service;
+package com.dongguk.chat.presence;
 
 import org.springframework.stereotype.Component;
 
@@ -10,6 +10,7 @@ public class OnlineUserTracker {
     private final Set<Long> onlineUsers = ConcurrentHashMap.newKeySet();
 
     public void markOnline(Long userId){
+        System.out.println("user 접속 : " + userId);
         onlineUsers.add(userId);
     }
 

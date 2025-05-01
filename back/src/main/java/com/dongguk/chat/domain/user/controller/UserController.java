@@ -1,9 +1,8 @@
 package com.dongguk.chat.domain.user.controller;
 
-import com.dongguk.chat.domain.user.User;
 import com.dongguk.chat.domain.user.dto.UserCreateReq;
 import com.dongguk.chat.domain.user.dto.UserResponseDto;
-import com.dongguk.chat.domain.user.service.UserService;
+import com.dongguk.chat.util.UserService;
 import com.dongguk.chat.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +26,6 @@ public class UserController {
     public UserResponseDto getUserInfo(HttpServletRequest req){
         Claims claims = jwtUtil.getClaims(jwtUtil.getJwtToken(req));
         String userId = claims.getSubject();
-        return UserResponseDto.fromUser(userService.getUserInfo(userId));
+        return UserResponseDto.fromUser(userService.getUserInfo((long) Integer.parseInt(userId)));
     }
 }

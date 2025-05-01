@@ -1,75 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>1:1 STOMP 채팅 테스트</title>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-</head>
-<body>
-<h2>1:1 STOMP 채팅 테스트</h2>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
-<label>채팅방 ID (roomId):</label>
-<input type="text" id="roomId" placeholder="예: 5" /><br>
-
-<label>내 사용자 ID (senderId):</label>
-<input type="text" id="senderId" placeholder="예: 1" /><br><br>
-
-<button onclick="connect()">채팅 연결</button><br><br>
-
-<input type="text" id="message" placeholder="메시지를 입력하세요" />
-<button onclick="sendMessage()">보내기</button>
-
-<ul id="chat-list"></ul>
+<input type="text" id="tokenInput" placeholder="JWT Access Token">
+<button onclick="connect()">연결</button>
 
 <script>
-    let stompClient;
+    let stompClient = null;
 
     function connect() {
-        const socket = new SockJS("/portfolio");
-        stompClient = Stomp.over(socket);
+        const token = document.getElementById("tokenInput").value.trim();
 
-        stompClient.connect({}, function () {
-            const roomId = document.getElementById("roomId").value;
-            if (!roomId) {
-                alert("roomId를 입력해주세요!");
-                return;
-            }
-
-            stompClient.subscribe(`/topic/chatroom/${roomId}`, function (response) {
-                const message = JSON.parse(response.body);
-                const chatList = document.getElementById("chat-list");
-                const li = document.createElement("li");
-                li.textContent = `[${message.sentAt}] ${message.sender} : ${message.content}`;
-                chatList.appendChild(li);
-            });
-
-            alert("채팅 서버에 연결되었습니다!");
-        }, function (error) {
-            console.error("STOMP 연결 실패:", error);
-            alert("연결에 실패했습니다.");
-        });
-    }
-
-    function sendMessage() {
-        const content = document.getElementById("message").value;
-        const senderId = document.getElementById("senderId").value;
-        const roomId = document.getElementById("roomId").value;
-
-        if (!stompClient || !stompClient.connected) {
-            alert("STOMP에 연결되지 않았습니다. '채팅 연결' 버튼을 눌러주세요.");
+        if (!token) {
+            alert("token을 입력하세요.");
             return;
         }
 
-        const payload = {
-            sender: senderId,
-            roomId: roomId,
-            content: content
-        };
+        const socket = new WebSocket("ws://localhost:8080/portfolio"); // 🔥 SockJS 제거
+        stompClient = Stomp.over(socket);
 
-        stompClient.send("/app/chat.send", {}, JSON.stringify(payload));
-        document.getElementById("message").value = "";
+        stompClient.connect(
+            {
+                token: token  // ✅ STOMP CONNECT 헤더로 JWT 전달
+            },
+            function () {
+                console.log("✅ 연결 성공");
+            },
+            function (err) {
+                console.error("❌ 연결 실패", err);
+            }
+        );
     }
 </script>
-</body>
-</html>

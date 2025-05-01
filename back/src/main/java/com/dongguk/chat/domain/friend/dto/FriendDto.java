@@ -18,6 +18,7 @@ public class FriendDto {
     private Long userId;
     private String nickname;
     private String imageUrl;
+    private boolean isOnline;
 
     public static FriendDto fromUser(User user){
         return FriendDto.builder()

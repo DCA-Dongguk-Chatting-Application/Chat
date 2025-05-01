@@ -5,6 +5,7 @@ import com.dongguk.chat.domain.friend.dto.FriendDto;
 import com.dongguk.chat.domain.friend.repository.FriendShipRepository;
 import com.dongguk.chat.domain.user.User;
 import com.dongguk.chat.domain.user.repository.UserRepository;
+import com.dongguk.chat.presence.OnlineUserTracker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.util.List;
 public class FriendShipService {
     private final FriendShipRepository friendShipRepository;
     private final UserRepository userRepository;
+    private final OnlineUserTracker onlineUserTracker;
 
 
     /*
@@ -25,7 +27,12 @@ public class FriendShipService {
     @Transactional(readOnly = true)
     public List<FriendDto> getFriendsList(Long userId){
         List<User> friendList = getOtherUsersFromAcceptedFriendships(userId);
-        return FriendDto.fromUserList(friendList);
+        List<FriendDto> friendDtos = FriendDto.fromUserList(friendList);
+
+        return friendDtos.stream().map(friend -> {
+            friend.setOnline(onlineUserTracker.isOnline(friend.getUserId()));
+            return friend;
+        }).toList();
     }
 
     @Transactional(readOnly = true)

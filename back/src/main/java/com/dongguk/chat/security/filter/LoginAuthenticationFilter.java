@@ -51,9 +51,9 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String userLoginId = userDetails.getUsername();
+        Long userId = userDetails.getUsers().getId();
 
-        String accessToken = jwtUtil.generateAccessToken(userLoginId);
+        String accessToken = jwtUtil.generateAccessToken(userId);
         JwtToken jwtToken = JwtToken.builder()
                 .accessToken(accessToken)
                 .userResponseDto(UserResponseDto.fromUser(userDetails.getUsers()))
