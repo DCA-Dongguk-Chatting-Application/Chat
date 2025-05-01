@@ -233,6 +233,7 @@ useEffect(() => {
                             </div>
                             ))}
                             </div>
+                            <div class = "left-banner-room-add-friendlist-container-text">친구 목록</div>
 
                             <img src={require(`./assets/right.png`)}alt="arrow icon" className="arrow-icon"/> 
                             
@@ -247,8 +248,9 @@ useEffect(() => {
                                 </div>
                                 ))}
                             </div>
-
+                            <div class = "left-banner-room-add-invitelist-container-text">초대 목록</div>
                             <input class = "left-banner-room-add-searchbox" placeholder="검색" value = {searchTerm} onChange = {(e)=>setSearchTerm(e.target.value)}/>
+                            <input class = "left-banner-room-add-room-title-textbox" placeholder = "방 제목은?"/>
                             <div class = "left-banner-room-ok">확인</div>
                         </div>
                     </div>
