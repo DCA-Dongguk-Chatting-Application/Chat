@@ -6,6 +6,7 @@ import ChatBubble from "./component/ChatBubble"; //말풍선 컴포넌트
 import FriendList from "./component/FriendList"; // 친구목록 컴포넌트
 import MateList from "./component/MateList"; // 참여자 목록 보여주는 컴포넌트
 import RoomList from "./component/RoomList"; // 방 목록 보여주는 컴포넌트
+import WebSocketConnector from "./component/WebSocketConnector";
 import {chatlog} from "./Testdata/testdata_chat"; //대화목록
 import {friendlist} from "./Testdata/testdata_friendlist"; //친구목록
 import {roomates} from "./Testdata/testdata_roomates"; // 참여자 목록
@@ -14,6 +15,7 @@ import axios from 'axios'
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { GetUserInfo }  from "./component/UserInfo"
+
 
 
 
@@ -37,6 +39,7 @@ export const Main = () => {
     const chatContainerRef = useRef(null);
     const [roomId, setRoomId] = useState("");//임시
     const [userInfo, setUserInfo] = useState(null);
+    const token = localStorage.getItem("accessToken");
 
 
 //파일 업로드  
@@ -199,6 +202,7 @@ useEffect(() => {
 //**본 메인 화면**//
     return (
     <div class = "background">
+        <WebSocketConnector token = {token}/>
         <div class = "left-banner">
             <div class = "left-banner-zone">
                 {rooms.map((room, index) => (
