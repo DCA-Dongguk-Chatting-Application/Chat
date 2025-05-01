@@ -12,7 +12,7 @@ import {friendlist} from "./Testdata/testdata_friendlist"; //친구목록
 import {roomates} from "./Testdata/testdata_roomates"; // 참여자 목록
 import {rooms} from "./Testdata/testdata_roomlist"; // 방 목록
 import axios from 'axios'
-import SockJS from "sockjs-client";
+
 import { Client } from "@stomp/stompjs";
 import { GetUserInfo }  from "./component/UserInfo"
 
@@ -36,6 +36,7 @@ export const Main = () => {
     const [roomName, setRoomName] = useState("방을 선택하세요")//방 제목
     const fileInputRef = useRef(null);
     const clientRef = useRef(null);
+    const [client, setClient] = useState(null);
     const chatContainerRef = useRef(null);
     const [roomId, setRoomId] = useState("");//임시
     const [userInfo, setUserInfo] = useState(null);
@@ -108,38 +109,12 @@ useEffect(() => {
 
 }, [roomId]);
 
-// ✅ 4. 웹소켓 연결
-useEffect(() => {
-    if (!roomId) return;
 
-    const socket = new SockJS('/api/portfolio');
-    const client = new Client({
-        webSocketFactory: () => socket,
-        debug: (str) => console.log(str),
-        onConnect: () => {
-            console.log('웹소켓 연결됨');
-            client.subscribe(`/topic/chatroom/${roomId}`, (message) => {
-                const newMessage = JSON.parse(message.body);
-                setChatLog(prev => [...prev, newMessage]);
-            });
-        },
-        onStompError: (frame) => {
-            console.error('STOMP 오류', frame);
-        },
-    });
-
-    client.activate();
-    clientRef.current = client;
-
-    return () => {
-        client.deactivate();
-    };
-}, [roomId]);
 
 //메시지 전송 버튼 동작
 function sendMessage() {
     
-    const client = clientRef.current;
+    
     if (!client || !client.connected) {
         alert("STOMP에 연결되지 않았습니다. '채팅 연결' 버튼을 눌러주세요.");
         return;
@@ -202,7 +177,7 @@ useEffect(() => {
 //**본 메인 화면**//
     return (
     <div class = "background">
-        <WebSocketConnector token = {token}/>
+        <WebSocketConnector token = {token} roomId = {roomId} setChatLog={setChatLog} setClient = {setClient}/>
         <div class = "left-banner">
             <div class = "left-banner-zone">
                 {rooms.map((room, index) => (
