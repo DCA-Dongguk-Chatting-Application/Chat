@@ -3,13 +3,30 @@ import { useNavigate } from "react-router-dom";
 import "./style.css";
 import RequestList from "./component/RequestList"; //친구신청목록 컴포넌트
 import {friendRequests} from "./Testdata/testdata_friendrequest"; // 친신 목록
+import { GetUserInfo }  from "./component/UserInfo"
 import axios from 'axios'
 
 
 
 export const Setting = () => {
+  const [requestId, setRequestId] = useState("")//친구신청 창에서, 입력한 ID값
   const fileInputRef = useRef(null);
-
+  const [userInfo, setUserInfo] = useState(null);
+  // ✅ 1. 유저 정보 가져오기
+  useEffect(() => {
+      const token = localStorage.getItem("accessToken");
+      const fetchUserInfo = async () => {
+          try {
+              const user = await GetUserInfo(token);
+              setUserInfo(user);
+              console.log("[setting]유저 정보:", user);
+          } catch (err) {
+              alert("유저 정보를 불러오지 못했습니다.");
+          }
+      };
+      fetchUserInfo();
+  }, []);
+  ///이미지
   const handleProfilePicUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -38,21 +55,46 @@ export const Setting = () => {
     navigate("/main"); 
   };
 
-//친구정보 불러오기
-const userId = 4;///임시시
-const [friendRequests, setFriendRequests] = useState([]);
-useEffect(() => {
-  axios.get(`/api/requests/${userId}`)
-      .then((response) => {
-          setFriendRequests(response.data);
-          console.log("친구신청목록 부름");
-      })
-      .catch((error) => {
-          console.error("친구신청목록 불러오기 실패", error);
-      });
-}, []);  
+  const sendRequest = async () => {///친구 신청 버튼 누르면 작동
+    const token = localStorage.getItem("accessToken");
   
-    
+    if (!requestId) {
+      alert("ID를 입력해주세요.");
+      return;
+    }
+  
+    if (!userInfo || !userInfo.id) {
+      alert("유저 정보를 불러오지 못했습니다.");
+      return;
+    }
+
+    if (userInfo.id == requestId) {
+      alert("자기 자신에게는 걸 수 없습니다");
+      return;
+    }
+  
+    try {
+      const response = await axios.post(
+        "/api/friends/request", 
+        {
+          requesterId: userInfo.id,
+          receiverId: requestId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      alert("친구신청을 보냈습니다");
+      console.log("친구 요청 응답:", response.data);
+    } catch (error) {
+      console.error("친구신청 중 에러:", error);
+      alert("실패하였습니다. 존재하는 ID가 맞는지 확인하세요");
+    }
+  };
+  
 
     return (
       <div class = "background">
@@ -146,10 +188,10 @@ useEffect(() => {
                 <div>
                   <div class = "setting-mode-1-text">친구 신청하기</div>
                   <div class = "setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청받기</div>
-                  <input class = "setting-mode-searchbox" placeholder = "userID 입력"/>
-                  <div class = "setting-mode-confirm">검색</div>
-                  <div class = "setting-searched-name">여기에 검색된 이름표시</div>
-                  <div class = "setting-mode-confirm-ok">친구신청 보내기</div>
+                  <input class = "setting-mode-searchbox" placeholder = "userID 입력" onChange={(e) => setRequestId(e.target.value)}/>
+                  {/*<div class = "setting-mode-confirm">검색</div>*/}
+                  <div class = "setting-searched-name">아이디 입력후 확인을 누르세요</div>
+                  <div class = "setting-mode-confirm-ok" onClick = {sendRequest}>친구신청 보내기</div>
                 </div>
                 ) : (
                 <div>
