@@ -36,9 +36,10 @@ export const Main = () => {
     const [roomates, setRoomatesList] = useState([]);//참여자목록
     const [roomName, setRoomName] = useState("방을 선택하세요")//방 제목
     const [profileNick, setProFileNick] = useState("");//프로필 생성- 닉네임
-    const [previewUrl, setPreviewUrl] = useState(null);//프로필 생성- 프사
+   //프로필 생성- 프사
+    const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
-    const clientRef = useRef(null);
+    
     const [client, setClient] = useState(null);
     const chatContainerRef = useRef(null);
     const [roomId, setRoomId] = useState("");//임시
@@ -51,48 +52,47 @@ export const Main = () => {
     }
 //파일 업로드  (채팅버튼)
     const handleFileUpload = (e) => {
+       
         const file = e.target.files[0];
         if (file) {
             alert(`선택된 파일: ${file.name}`);
             // 여기에 서버 연결 api 추가가
         }
+        
     };
 //프사 설정 (프로필 생성)
-    const handleProfilePic = (e) =>{
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviewUrl(reader.result);
-            };
-        reader.readAsDataURL(file);
-        }
+const handleImageChange = (e) => {
+    profileImageRef.current = e.target.files[0];
+    if(profileImageRef.current){
+        alert(`선택한 파일 : ${profileImageRef.current.name}`)
     }
-//프로필 업로드 확인 버튼 
-const handleProfileConfirm = async () => {
-    try {
-        const file = fileInputRef.current.files[0];
-
-        const formData = new FormData();
-        formData.append("nickname", profileNick);
-        formData.append("userId", userId);
-        if (file) {
-            formData.append("image", file); // MultipartFile로 전송할 이미지
-        }
-
-        const response = await axios.post("/api/profile", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-
-        alert("절차가 완료되었습니다!");
-        console.log(response.data);
-    } catch (error) {
-        console.log("프로필 등록 에러", error);
-        setErrorMessage(error.response?.data || "프로필 등록 실패");
-    }
+ 
 };
+
+
+//프로필 업로드 확인 버튼 
+const handleProfileConfirm = async (e) => {
+    
+
+    const formData = new FormData();
+    formData.append('imageUrl', profileImageRef.current);           // MultipartFile
+    formData.append('nickname', profileNick);     // 일반 문자열
+    formData.append('userId', userId);         // Long 타입, 문자열로 보내도 됨
+
+    try {
+      const response = await axios.post('/api/profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        
+      }
+    );
+      console.log('프로필 생성 성공:', response.data);
+    } catch (error) {
+      console.error('프로필 생성 실패:', error);
+    }
+    
+  };
 
 // ✅ 1. 유저 정보 가져오기
 useEffect(() => {
@@ -231,8 +231,7 @@ useEffect(() => {
                          type="file" 
                         accept="image/*" 
                         className="profile-modal-image-upload"
-                        onChange = {handleProfilePic}
-                        ref={fileInputRef}
+                        onChange={handleImageChange}
                     />
                     <input class = "profile-modal-name-textbox" placeholder="닉네임 입력" onChange={(e) => setProFileNick(e.target.value)}/>
                     <div class = "profile-modal-confirm-button" onClick = {handleProfileConfirm}>확인</div>
@@ -405,7 +404,7 @@ useEffect(() => {
             <div className="right-banner-friend-list-zone">
              {friendlistswitched
                 ? friendlist.map((friend, index) => (
-                    <FriendList key={index} id={friend.userId} name={friend.userId} />
+                    <FriendList key={index} id={friend.userId} name={friend.userId} isOnline = {friend.online}  />
                 ))
                 : roomates.map((mate, index) => (
                     <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} />

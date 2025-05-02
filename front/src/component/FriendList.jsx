@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 
 
-function FriendList({id, name}) {
+function FriendList({id, name, isOnline}) {
     const [showModal, setShowModal] = useState(false);
     const toggleModal = () => {
         setShowModal(!showModal);
@@ -13,7 +13,10 @@ function FriendList({id, name}) {
     <div class = "friend-single-section" onClick={toggleModal}>
         <div class = "right-banner-friend-profile-picture"></div>
         <div class = "right-banner-freind-name-container">{name}</div>
-        <div class = "right-banner-online-indicator"></div>
+        <div 
+  className="right-banner-online-indicator" 
+  style={{ backgroundColor: isOnline ? 'green' : 'red' }}
+></div>
 
     </div>
     
