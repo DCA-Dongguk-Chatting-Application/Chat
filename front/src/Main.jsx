@@ -46,7 +46,9 @@ export const Main = () => {
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("accessToken");
 
-
+    const profileClose = () => {
+        setProfileModalOpened(false);
+    }
 //파일 업로드  (채팅버튼)
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -230,9 +232,11 @@ useEffect(() => {
                         accept="image/*" 
                         className="profile-modal-image-upload"
                         onChange = {handleProfilePic}
+                        ref={fileInputRef}
                     />
                     <input class = "profile-modal-name-textbox" placeholder="닉네임 입력" onChange={(e) => setProFileNick(e.target.value)}/>
                     <div class = "profile-modal-confirm-button" onClick = {handleProfileConfirm}>확인</div>
+                    <div class = "profile-modal-close" onClick={profileClose}>닫기</div>
                 </div>
             </div>
         )}
