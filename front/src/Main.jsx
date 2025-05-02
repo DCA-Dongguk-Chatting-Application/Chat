@@ -32,7 +32,7 @@ export const Main = () => {
     const [textbox, setTextbox] = useState("");//채팅칸 입력내용 받음
     const [chatlog, setChatLog] = useState([]);//채팅내역 배열열
     const [rooms, setRooms] = useState([]);//방목록
-    const [friendlist, setFriendList] = useState([]);//친구목록
+    const [friendlist, setFriendList] = useState([]);//친구 목록
     const [roomates, setRoomatesList] = useState([]);//참여자목록
     const [roomName, setRoomName] = useState("방을 선택하세요")//방 제목
     const [profileNick, setProFileNick] = useState("");//프로필 생성- 닉네임
@@ -120,15 +120,33 @@ useEffect(() => {
         })
         .catch((err) => console.error("방 목록 불러오기 실패", err));
 
-    // 친구 목록 가져오기
-    axios.get(`/api/friends/${userInfo.id}`)
-        .then((res) => {
-            setFriendList(res.data);
-            console.log("친구목록 부름");
-        })
-        .catch((err) => console.error("친구 목록 불러오기 실패", err));
+ 
+    }, [userInfo]);
+
+// 친구 목록 불러오기 및 polling (10초마다 갱신)
+useEffect(() => {
+    if (!userInfo) return;
+
+    const fetchFriendList = () => {
+        axios.get(`/api/friends/${userInfo.id}`)
+            .then((res) => {
+                setFriendList(res.data);
+                console.log("친구목록 갱신");
+            })
+            .catch((err) => console.error("친구 목록 갱신 실패", err));
+    };
+
+    // 최초 실행
+    fetchFriendList();
+
+    // 10초마다 polling
+    const intervalId = setInterval(fetchFriendList, 1000);
+
+    // 컴포넌트 언마운트 시 clear
+    return () => clearInterval(intervalId);
 
 }, [userInfo]);
+
 
 // ✅ 3. roomId가 선택된 후 참여자 목록과 채팅 기록 가져오기
 useEffect(() => {
