@@ -20,11 +20,12 @@ import { GetUserInfo }  from "./component/UserInfo"
 
 
 export const Main = () => {
-    
+    const [errorMessage, setErrorMessage] = useState("");
     const [isHovered, setIsHovered] = useState(false)
     const [ismymenuModalOpened, setmymenuModalOpened] = useState(false)
-    const [isRoomAddModalOpened, setRoomAddModalOpened] = useState(false)
-    const [isExitModalOpened, setExitModalOpened] = useState(false)
+    const [isRoomAddModalOpened, setRoomAddModalOpened] = useState(false)//방 추가버튼 누를시 모달창
+    const [isExitModalOpened, setExitModalOpened] = useState(false)//방 나가기 클릭시 모달
+    const [isProfileModalOpened, setProfileModalOpened] = useState(true)//로그인 후, 프로필 정보 쓰는 모달이 나온다
     const [friendlistswitched, setfriendlistswitched] = useState(true)
     const [inviteList, setInviteList] = useState([]); //방 생성시초대목록
     const [searchTerm, setSearchTerm] = useState("");//방 생성시 친구검색색필터
@@ -34,16 +35,19 @@ export const Main = () => {
     const [friendlist, setFriendList] = useState([]);//친구목록
     const [roomates, setRoomatesList] = useState([]);//참여자목록
     const [roomName, setRoomName] = useState("방을 선택하세요")//방 제목
+    const [profileNick, setProFileNick] = useState("");//프로필 생성- 닉네임
+    const [previewUrl, setPreviewUrl] = useState(null);//프로필 생성- 프사
     const fileInputRef = useRef(null);
     const clientRef = useRef(null);
     const [client, setClient] = useState(null);
     const chatContainerRef = useRef(null);
     const [roomId, setRoomId] = useState("");//임시
     const [userInfo, setUserInfo] = useState(null);
+    const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("accessToken");
 
 
-//파일 업로드  
+//파일 업로드  (채팅버튼)
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -51,6 +55,42 @@ export const Main = () => {
             // 여기에 서버 연결 api 추가가
         }
     };
+//프사 설정 (프로필 생성)
+    const handleProfilePic = (e) =>{
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result);
+            };
+        reader.readAsDataURL(file);
+        }
+    }
+//프로필 업로드 확인 버튼 
+const handleProfileConfirm = async () => {
+    try {
+        const file = fileInputRef.current.files[0];
+
+        const formData = new FormData();
+        formData.append("nickname", profileNick);
+        formData.append("userId", userId);
+        if (file) {
+            formData.append("image", file); // MultipartFile로 전송할 이미지
+        }
+
+        const response = await axios.post("/api/profile", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+
+        alert("절차가 완료되었습니다!");
+        console.log(response.data);
+    } catch (error) {
+        console.log("프로필 등록 에러", error);
+        setErrorMessage(error.response?.data || "프로필 등록 실패");
+    }
+};
 
 // ✅ 1. 유저 정보 가져오기
 useEffect(() => {
@@ -178,6 +218,24 @@ useEffect(() => {
     return (
     <div class = "background">
         <WebSocketConnector token = {token} roomId = {roomId} setChatLog={setChatLog} setClient = {setClient}/>
+        {isProfileModalOpened && (
+            <div class = "modal-overlay">
+                <div class = "profile-modal-container">
+                    <div class = "profile-modal-instruction">환영합니다!</div>
+                    <div class = "profile-modal-sub-intro">진행하시려면 정보를 입력해주세요</div>
+                    <div class = "profile-modal-name-guide" >닉네임</div>
+                    <div className="profile-modal-image-guide">프로필 이미지</div>
+                    <input 
+                         type="file" 
+                        accept="image/*" 
+                        className="profile-modal-image-upload"
+                        onChange = {handleProfilePic}
+                    />
+                    <input class = "profile-modal-name-textbox" placeholder="닉네임 입력" onChange={(e) => setProFileNick(e.target.value)}/>
+                    <div class = "profile-modal-confirm-button" onClick = {handleProfileConfirm}>확인</div>
+                </div>
+            </div>
+        )}
         <div class = "left-banner">
             <div class = "left-banner-zone">
                 {rooms.map((room, index) => (

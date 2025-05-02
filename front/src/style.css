@@ -391,6 +391,84 @@
     scrollbar-width : none;
 }
 
+.profile-modal-container{
+    background :rgb(105, 104, 104);
+    width : 700px;
+    height : 500px;
+    border-radius : 10px;
+    display : flex;
+    position : relative;
+}
+
+.profile-modal-instruction{
+    position : absolute;
+    color : white;
+    font-size : 40px;
+    top : 15%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-sub-intro{
+    position : absolute;
+    color : white;
+    font-size : 20px;
+    top : 30%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-name-textbox{
+    position : absolute;
+
+    font-size : 20px;
+    top : 50%;
+    left : 60%;
+    padding: 10px;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-name-guide{
+    position : absolute;
+    font-size : 25px;
+    color : white;
+    top : 50%;
+    left : 20%;
+    padding: 10px;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-image-guide{
+    position : absolute;
+    font-size : 25px;
+    color : white;
+    top : 65%;
+    left : 20%;
+    padding: 10px;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-image-upload{
+    position : absolute;
+    top : 65%;
+    left : 67%;
+    font-size : 20px;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-confirm-button{
+    position : absolute;
+    font-size : 15px;
+    background-color : white;
+    top : 85%;
+    left : 50%;
+    padding: 5px;
+    transform: translate(-50%, -50%);
+    width : 60px;
+    text-align: center;
+    border-radius : 5px;
+}
+
 .friend-modal-container{
     background :rgb(105, 104, 104);
     width : 450px;
