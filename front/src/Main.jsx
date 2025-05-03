@@ -28,6 +28,7 @@ export const Main = () => {
     const [isProfileModalOpened, setProfileModalOpened] = useState(true)//로그인 후, 프로필 정보 쓰는 모달이 나온다
     const [friendlistswitched, setfriendlistswitched] = useState(true)
     const [inviteList, setInviteList] = useState([]); //방 생성시초대목록
+    const [newRoomname, setNewRoomname] = useState([]); //방 생성시 제목
     const [searchTerm, setSearchTerm] = useState("");//방 생성시 친구검색색필터
     const [textbox, setTextbox] = useState("");//채팅칸 입력내용 받음
     const [chatlog, setChatLog] = useState([]);//채팅내역 배열열
@@ -124,7 +125,7 @@ useEffect(() => {
  
     }, [userInfo]);
 
-// 친구 목록 불러오기 및 polling (1초마다 갱신)
+        // 친구 목록 불러오기 및 polling (1초마다 갱신)
 useEffect(() => {
     if (!userInfo) return;
 
@@ -243,6 +244,35 @@ const handleInvite = (friend) => {
         setRoomId(id);
         setRoomName(name);
     };
+
+//채팅방 생성기능 구현 (아직 1대1 채팅만 구현)
+const handleCreateRoom = async () => {
+    const invitedUserIds = inviteList.map(friend => friend.userId);
+    //초대한 인원들의 ID을 모두 inviteList에 담는다
+    if (invitedUserIds.length !== 1) {
+      alert('현재 1대1채팅만 구현되었습니다. 1명만 초대하세요');
+      return;
+    }
+  
+    const roomName = newRoomname; // 예: "chat_123_456"
+  
+    try {
+      const response = await axios.post('/api/chatroom/create', {
+        roomName: roomName,
+        myId: userId,
+        partnerId: invitedUserIds[0]
+      });
+  
+      // 성공 시 처리
+      console.log('방 생성 성공:', response.data);
+      const newRoom = response.data;
+      setRooms(prevRooms => [...prevRooms, newRoom]);
+      setRoomAddModalOpened(!isRoomAddModalOpened);
+    } catch (error) {
+      console.error('방 생성 실패:', error);
+      alert('방 생성에 실패했습니다.');
+    }
+  };
  
   
 
@@ -320,8 +350,8 @@ const handleInvite = (friend) => {
                             </div>
                             <div class = "left-banner-room-add-invitelist-container-text">초대 목록</div>
                             <input class = "left-banner-room-add-searchbox" placeholder="검색" value = {searchTerm} onChange = {(e)=>setSearchTerm(e.target.value)}/>
-                            <input class = "left-banner-room-add-room-title-textbox" placeholder = "방 제목은?"/>
-                            <div class = "left-banner-room-ok">확인</div>
+                            <input class = "left-banner-room-add-room-title-textbox" placeholder = "방 제목은?"  onChange={(e) => setNewRoomname(e.target.value)}/>
+                            <div class = "left-banner-room-ok" onClick={handleCreateRoom}>확인</div>
                         </div>
                     </div>
                 )}
