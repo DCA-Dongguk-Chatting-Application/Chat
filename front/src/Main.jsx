@@ -28,7 +28,7 @@ export const Main = () => {
     const [isProfileModalOpened, setProfileModalOpened] = useState(true)//로그인 후, 프로필 정보 쓰는 모달이 나온다
     const [friendlistswitched, setfriendlistswitched] = useState(true)
     const [inviteList, setInviteList] = useState([]); //방 생성시초대목록
-    const [newRoomname, setNewRoomname] = useState([]); //방 생성시 제목
+    const [newRoomname, setNewRoomname] = useState(""); //방 생성시 제목
     const [searchTerm, setSearchTerm] = useState("");//방 생성시 친구검색색필터
     const [textbox, setTextbox] = useState("");//채팅칸 입력내용 받음
     const [chatlog, setChatLog] = useState([]);//채팅내역 배열열
