@@ -35,6 +35,7 @@ function RoomList({ id, name, onClick }) {
                 onMouseLeave={handleMouseLeave}
             >
                 <div className="left-banner-room-icon-text">{new_name}</div>
+                <div style={{ color: 'red' }}>#{id}</div>
             </div>
 
             {/* React Portal을 사용하여 Tooltip을 body 태그에 렌더링 */}

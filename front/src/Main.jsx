@@ -265,8 +265,9 @@ const handleCreateRoom = async () => {
   
       // 성공 시 처리
       console.log('방 생성 성공:', response.data);
-      const newRoom = response.data;
-      setRooms(prevRooms => [...prevRooms, newRoom]);
+      const roomRes = await axios.get(`/api/chatroom/list/${userId}`);
+      setRooms(roomRes.data);
+
       setRoomAddModalOpened(!isRoomAddModalOpened);
     } catch (error) {
       console.error('방 생성 실패:', error);
