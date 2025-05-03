@@ -72,7 +72,6 @@ export const Setting = () => {
       alert("자기 자신에게는 걸 수 없습니다");
       return;
     }
-  
     try {
       const response = await axios.post(
         "/api/friends/request", 
@@ -101,7 +100,7 @@ export const Setting = () => {
           <div class = "setting-profile-container">
               <div class = "setting-profile-picture" onClick={() => fileInputRef.current.click()}>클릭하여 업로드</div>
               <h3 class = "setting-profile-info-text">프로필 정보</h3>
-              <h1 class = "setting-nick">아아아ㄴ</h1>
+              <h1 class = "setting-nick">닉네임공간</h1>
               
               <div class = "setting-info-container">
                 <div class = "setting-name-zone">

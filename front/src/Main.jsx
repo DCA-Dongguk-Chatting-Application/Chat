@@ -299,7 +299,7 @@ const handleInvite = (friend) => {
                                     className="friend-list-item"
                                     onClick={() => handleInvite(friend)}
                                 >
-                                {friend.userId}
+                                {friend.userId}-{friend.nickname}
                             </div>
                             ))}
                             </div>
@@ -314,7 +314,7 @@ const handleInvite = (friend) => {
                                     className="invite-list-item"
                                     onClick={() => handleRemoveInvite(friend)}
                                 >
-                                    {friend.userId}
+                                    {friend.userId}-{friend.nickname}
                                 </div>
                                 ))}
                             </div>
@@ -434,7 +434,7 @@ const handleInvite = (friend) => {
             <div className="right-banner-friend-list-zone">
              {friendlistswitched
                 ? friendlist.map((friend, index) => (
-                    <FriendList key={index} id={friend.userId} name={friend.userId} isOnline = {friend.online}  />
+                    <FriendList key={index} id={friend.userId} name={friend.nickname} isOnline = {friend.online}  />
                 ))
                 : roomates.map((mate, index) => (
                     <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} />

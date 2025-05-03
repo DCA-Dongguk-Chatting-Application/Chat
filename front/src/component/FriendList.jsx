@@ -12,11 +12,11 @@ function FriendList({id, name, isOnline}) {
     <>
     <div class = "friend-single-section" onClick={toggleModal}>
         <div class = "right-banner-friend-profile-picture"></div>
-        <div class = "right-banner-freind-name-container">{name}</div>
+        <div class = "right-banner-freind-name-container">{id}-{name}</div>
         <div 
-  className="right-banner-online-indicator" 
-  style={{ backgroundColor: isOnline ? 'green' : 'red' }}
-></div>
+            className="right-banner-online-indicator" 
+            style={{ backgroundColor: isOnline ? 'green' : 'red' }}
+        ></div>
 
     </div>
     
@@ -32,7 +32,7 @@ function FriendList({id, name, isOnline}) {
                          />
                 </div>
                 <div class = "friend-modal-profile-pic">프사</div>
-                <div class = "friend-modal-desc">안녕하세요 반갑습니다</div>
+                <div class = "friend-modal-desc">이름</div>
                 <div class = "friend-modal-phone-num">010-1010-0101</div>
                 <div class = "friend-modal-email">aaaaa@bbb.com</div>
             </div>
