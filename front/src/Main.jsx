@@ -32,7 +32,8 @@ export const Main = () => {
     const [textbox, setTextbox] = useState("");//채팅칸 입력내용 받음
     const [chatlog, setChatLog] = useState([]);//채팅내역 배열열
     const [rooms, setRooms] = useState([]);//방목록
-    const [friendlist, setFriendList] = useState([]);//친구 목록
+    const [friendlist, setFriendList] = useState([]);//친구 목록 (1초마다 자동 갱신됨)
+    const [displayFriendList, setDisplayFriendList] = useState([]);//친구 초대시에만 임시로 쓰는 부분. 갱신 버그를 방지하기 위해 친구 목록을 복사해 저장
     const [roomates, setRoomatesList] = useState([]);//참여자목록
     const [roomName, setRoomName] = useState("방을 선택하세요")//방 제목
     const [profileNick, setProFileNick] = useState("");//프로필 생성- 닉네임
@@ -123,7 +124,7 @@ useEffect(() => {
  
     }, [userInfo]);
 
-// 친구 목록 불러오기 및 polling (10초마다 갱신)
+// 친구 목록 불러오기 및 polling (1초마다 갱신)
 useEffect(() => {
     if (!userInfo) return;
 
@@ -136,11 +137,21 @@ useEffect(() => {
             .catch((err) => console.error("친구 목록 갱신 실패", err));
     };
 
+    const silenceFriendList = () => {
+        axios.get(`/api/friends/${userInfo.id}`)
+            .then((res) => {
+                setDisplayFriendList(res.data);
+                console.log("친추용 친구목록 받아옴");
+            })
+            .catch((err) => console.error("친구 목록 갱신 실패", err));
+    };
+
     // 최초 실행
     fetchFriendList();
-
-    // 10초마다 polling
+    silenceFriendList();//친구초대 기능용 리스트. 초대 기능 작동중 갱신되지 않게 조치
+    // 1초마다 polling, 온/오프라인 상태 실시간 반영을 위함
     const intervalId = setInterval(fetchFriendList, 1000);
+
 
     // 컴포넌트 언마운트 시 clear
     return () => clearInterval(intervalId);
@@ -200,14 +211,15 @@ useEffect(() => {
     }
   }, [chatlog]);
 //방 생성시 친구초대
-    const toggleInviteFriend = (friend) => {//방 생성시 친구초대
-        setInviteList((prev) => {
-          const exists = prev.find((f) => f.id === friend.id);
-          return exists
-            ? prev.filter((f) => f.id !== friend.id) // 이미 있으면 제거
-            : [...prev, friend]; // 없으면 추가
-        });
-      };
+const handleInvite = (friend) => {
+    setDisplayFriendList(displayFriendList.filter(f => f.userId !== friend.userId));
+    setInviteList([...inviteList, friend]);
+  };
+
+  const handleRemoveInvite = (friend) => {
+    setInviteList(inviteList.filter(f => f.userId !== friend.userId));
+    setDisplayFriendList([...displayFriendList, friend]);
+  };
     //각 팝업창 on/off관리
     const ToggleMyMenu = () => {//내 메뉴
         setmymenuModalOpened(!ismymenuModalOpened);
@@ -279,13 +291,13 @@ useEffect(() => {
                                 className="close-icon"
                             /> </div>
                             <div class = "left-banner-room-add-friendlist-container">
-                            {friendlist
-                            .filter((friend) =>friend.nickname?.toLowerCase().includes(searchTerm.toLowerCase()))
+                            {displayFriendList
+                            .filter((friend) =>String(friend.userId)?.toLowerCase().includes(searchTerm.toLowerCase()))
                             .map((friend) => (
                                 <div
                                     key={friend.userId}
                                     className="friend-list-item"
-                                    onClick={() => toggleInviteFriend(friend)}
+                                    onClick={() => handleInvite(friend)}
                                 >
                                 {friend.userId}
                             </div>
@@ -300,7 +312,7 @@ useEffect(() => {
                                 <div
                                     key={friend.userId}
                                     className="invite-list-item"
-                                    onClick={() => toggleInviteFriend(friend)}
+                                    onClick={() => handleRemoveInvite(friend)}
                                 >
                                     {friend.userId}
                                 </div>
