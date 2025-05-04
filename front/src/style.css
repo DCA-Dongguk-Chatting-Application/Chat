@@ -914,6 +914,15 @@
     border-radius : 20px;
 }
 
+.setting-profile-picture-real{
+    
+    
+    width : 180px;
+    height : 180px;
+    
+    border-radius : 20px;
+}
+
 .setting-profile-info-text{
     position : absolute;
     top : 9%;
