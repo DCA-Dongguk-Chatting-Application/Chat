@@ -77,15 +77,18 @@ const handleProfileConfirm = async (e) => {
     
 
     const formData = new FormData();
-    formData.append('imageUrl', profileImageRef.current);           // MultipartFile
+    formData.append('image', profileImageRef.current);           // MultipartFile
     formData.append('nickname', profileNick);     // 일반 문자열
-    formData.append('userId', userId);         // Long 타입, 문자열로 보내도 됨
+    formData.append('userId', userId);  
+    console.log('전송할 이미지:', profileImageRef.current);       // Long 타입, 문자열로 보내도 됨
 
     try {
       const response = await axios.post('/api/profile', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          
         },
+        
         
       }
     );
