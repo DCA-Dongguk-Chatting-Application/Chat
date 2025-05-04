@@ -71,10 +71,9 @@ public class ProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        UserProfile userProfile = profileRepository.findByUser(user)
-                .orElseThrow(() -> new IllegalArgumentException("프로필이 존재하지 않습니다."));
+        UserProfile profile = user.getProfile();
 
-        return ProfileResponse.from(userProfile);
+        return ProfileResponse.from(profile);
     }
 
 }
