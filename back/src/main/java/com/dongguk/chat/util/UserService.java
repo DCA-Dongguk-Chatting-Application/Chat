@@ -2,6 +2,7 @@ package com.dongguk.chat.util;
 
 import com.dongguk.chat.domain.user.User;
 import com.dongguk.chat.domain.user.dto.UserCreateReq;
+import com.dongguk.chat.domain.user.dto.UserEditReq;
 import com.dongguk.chat.domain.user.dto.UserResponseDto;
 import com.dongguk.chat.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,12 @@ public class UserService {
 
     public User getUserInfo(Long userId){
         return userRepository.findById(userId).get();
+    }
+
+    public UserResponseDto editUser(Long userId, UserEditReq req){
+        User findUser = userRepository.findById(userId).get();
+        findUser.update(req);
+        User updateUser = userRepository.save(findUser);
+        return UserResponseDto.fromUser(updateUser);
     }
 }

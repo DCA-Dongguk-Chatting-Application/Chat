@@ -37,8 +37,9 @@ public class ProfileService {
         userRepository.save(findUser);
 
         return ProfileResponse.from(savedProfile);
-
     }
+
+
 
     private String saveProfileImage(MultipartFile file) throws IOException{
         try{
