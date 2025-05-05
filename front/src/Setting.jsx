@@ -15,41 +15,36 @@ export const Setting = () => {
   const [userProfile, setUserProfile] = useState(null);//프로필 정보
   const [loading, setLoadingComplete] = useState(false);//로딩 여부 검ㅅㅏ
   const [newImageFile, setNewImageFile] = useState(null);//프사 
-  const [editNickname, setEditNickname] = useState("");//닉
+
   const [editPhone, setEditPhone] = useState("");//폰
   const [editEmail, setEditEmail] = useState("");//멜
   const token = localStorage.getItem("accessToken");
   const serverUrl = 'http://59.24.237.51:8080';
   // ✅ 1. 유저 정보, 유저 프로필 가져오기
+  const fetchUserInfo = async () => {
+    try {
+        const user = await GetUserInfo(token);
+        const user_profile = await GetUserProfile(token);
+        setUserInfo(user);
+        setUserProfile(user_profile);
+        
+        setEditPhone(user.phoneNumber);
+        setEditEmail(user.email);
+        setLoadingComplete(true);
+        console.log("로딩끝")
+        console.log("[setting_user]유저 정보:", user);
+        console.log("[setting_user_profile]유저 프로필", user_profile);
+    } catch (err) {
+        alert("유저 정보를 불러오지 못했습니다.");
+    }
+};
+  
   useEffect(() => {
       
-      const fetchUserInfo = async () => {
-          try {
-              const user = await GetUserInfo(token);
-              const user_profile = await GetUserProfile(token);
-              setUserInfo(user);
-              setUserProfile(user_profile);
-              setEditNickname(user_profile.nickname);
-              setEditPhone(user.phoneNumber);
-              setEditEmail(user.email);
-              setLoadingComplete(true);
-              console.log("로딩끝")
-              console.log("[setting_user]유저 정보:", user);
-              console.log("[setting_user_profile]유저 프로필", user_profile);
-          } catch (err) {
-              alert("유저 정보를 불러오지 못했습니다.");
-          }
-      };
+      
       fetchUserInfo();
   }, []);
 
-
-
-
-
-
-  
-  ///이미지
  
 //프로필수정
   const [showModal, setShowModal] = useState(false);
@@ -114,9 +109,9 @@ export const Setting = () => {
   const handleSubmitProfileEdit = async () => {
     try {
       const payload = {
-        username: editNickname,
-        phoneNumber: editPhone,
-        email: editEmail,
+        username: userInfo.username,
+        phoneNumber: editPhone.trim() ? editPhone : userInfo.phoneNumber,
+        email: editEmail.trim() ? editEmail : userInfo.email,
       };
   
       const response = await axios.put('/api/user', payload, {
@@ -129,11 +124,8 @@ export const Setting = () => {
       if (response.status === 200) {
         console.log('프로필 수정 성공:', response.data);
         alert('프로필이 성공적으로 수정되었습니다!');
-  
-        
-       
-  
-        setUserProfile(false);
+        setShowModal(false);//창닫기
+        fetchUserInfo();//새로고침
       } else {
         console.error('프로필 수정 실패:', response);
         alert('프로필 수정에 실패했습니다.');
@@ -143,6 +135,10 @@ export const Setting = () => {
       alert('서버와 통신 중 오류가 발생했습니다.');
     }
   };
+
+  const IdClick = () => {
+    alert("ID는 바꿀 수 없습니다");
+  }
   
 
     return (
@@ -212,16 +208,16 @@ export const Setting = () => {
                     className="close-icon"
                   />
                 </div>
-                <div class = "setting-modal-text-info">정보 수정</div>
+                <div class = "setting-modal-text-info">개인정보 수정</div>
 
-                <div class = "setting-modal-text-1">이름</div>
+                <div class = "setting-modal-text-1">ID</div>
                 <div class = "setting-modal-text-2">전화번호</div>
                 <div class = "setting-modal-text-3">이메일</div>
                 <div class = "setting-modal-text-4"></div>
 
-                <input class = "setting-modal-textbox-1"  onChange={(e) => setEditNickname(e.target.value)}></input>
-                <input class = "setting-modal-textbox-2" value = {userInfo.phoneNumber}  onChange={(e) => setEditPhone(e.target.value)}></input>
-                <input class = "setting-modal-textbox-3" value = {userInfo.email} onChange={(e) => setEditEmail(e.target.value)}></input>
+                <input class = "setting-modal-textbox-1" value = {userInfo.username} onClick={IdClick}></input>
+                <input class = "setting-modal-textbox-2"  placeholder = {userInfo.phoneNumber} onChange={(e) => setEditPhone(e.target.value)}></input>
+                <input class = "setting-modal-textbox-3"  placeholder = {userInfo.email} onChange={(e) => setEditEmail(e.target.value)}></input>
                 
 
                 <div class = "setting-modal-ok" onClick={handleSubmitProfileEdit}>확인</div>

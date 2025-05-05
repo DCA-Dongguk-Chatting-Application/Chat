@@ -1076,7 +1076,7 @@
 .setting-modal-text-1{
     position : absolute;
     font-size : 30px;
-    top : 35%;
+    top : 25%;
     left : 10%;
     transform: translate(0%, -50%);
 }
@@ -1084,7 +1084,7 @@
 .setting-modal-text-2{
     position : absolute;
     font-size : 30px;
-    top : 47%;
+    top : 37%;
     left : 10%;
     transform: translate(0%, -50%);
 }
@@ -1092,7 +1092,7 @@
 .setting-modal-text-3{
     position : absolute;
     font-size : 30px;
-    top : 59%;
+    top : 49%;
     left : 10%;
     transform: translate(0%, -50%);
 }
@@ -1108,7 +1108,7 @@
 .setting-modal-text-info{
     position : absolute;
     font-size : 30px;
-    top : 15%;
+    top : 10%;
     left : 50%;
     transform: translate(-50%, -50%);
 }
@@ -1134,19 +1134,21 @@
     position : absolute;
     height : 40px;
     width : 340px;
-    top : 35%;
+    top : 25%;
     left : 40%;
     transform: translate(0%, -50%);
     font-size : 26px;
     border : none;
     border-radius : 5px;
+    background-color :rgb(87, 87, 87);
+    color : rgb(59, 59, 59);
 }
 
 .setting-modal-textbox-2{
     position : absolute;
     height : 40px;
     width : 340px;
-    top : 47%;
+    top : 37%;
     left : 40%;
     transform: translate(0%, -50%);
     font-size : 26px;
@@ -1158,7 +1160,7 @@
     position : absolute;
     height : 40px;
     width : 340px;
-    top : 59%;
+    top : 49%;
     left : 40%;
     transform: translate(0%, -50%);
     font-size : 26px;
