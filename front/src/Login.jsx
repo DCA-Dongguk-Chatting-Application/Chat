@@ -45,6 +45,7 @@ export const Login = () => {
             if (response.status === 200 && accessToken) {
                 localStorage.setItem("accessToken", accessToken);
                 localStorage.setItem("userId", user.id);
+                console.log(`userid = ${user.id}`)
                 localStorage.setItem("username", user.username);
                 localStorage.setItem("userEmail", user.email);
              

@@ -3,12 +3,12 @@ import React, { useContext, useState } from "react";
 
 function ChatBubble({sender, message, isMe}) {
    
-
+    const userId = localStorage.getItem("userId");
     return (
         
     <div class = "chat-single-section">
         
-        {isMe === true? (
+        {userId == sender? (
             <div class = "chat-section-me">
                 <div class = "chat-bubble-zone-me">
                     <div class = "chat-bubble-me">{message}</div>

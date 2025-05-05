@@ -361,7 +361,8 @@
 }
 
 .chat-bubble-me{
-    background-color : white;
+    background-color : #696969;
+    color : white;
     padding : 10px;
     border-top-left-radius: 15px;
     border-top-right-radius: 0px;
