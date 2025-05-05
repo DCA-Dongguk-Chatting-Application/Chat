@@ -17,6 +17,8 @@ public class UserResponseDto {
 
     private String password; // 암호화된 비밀번호
 
+    private  String phoneNumber;
+
     private String email;
 
 
@@ -25,6 +27,7 @@ public class UserResponseDto {
                 .id(user.getId())
                 .password(user.getPassword())
                 .username(user.getUsername())
+                .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .build();
     }
