@@ -157,7 +157,7 @@ export const Setting = () => {
               
               <div class = "setting-info-container">
                 <div class = "setting-name-zone">
-                  <h1 class = "setting-name-tag">이름</h1>
+                  <h1 class = "setting-name-tag">ID</h1>
                   <h1 class = "setting-name-user">{loading ? userInfo.username : "Loading..."}</h1>
                 </div>
               
