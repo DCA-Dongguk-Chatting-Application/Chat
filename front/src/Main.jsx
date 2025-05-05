@@ -39,6 +39,7 @@ export const Main = () => {
     const [roomName, setRoomName] = useState("방을 선택하세요")//방 제목
     const [profileNick, setProFileNick] = useState("");//프로필 생성- 닉네임
     const [userProfile, setUserProfile] = useState(null);//최초 접속 시, 프로필이 있는지 검사용
+    const [loading, setLoadingComplete] = useState(false);//프로필로딩 여부 검ㅅㅏ
    //프로필 생성- 프사
     const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -77,20 +78,29 @@ const handleImageChange = (e) => {
         const user_profile = await GetUserProfile(token);
         setUserProfile(user_profile);
         console.log("[setting_user_profile]유저 프로필", user_profile);
-        if (user_profile.nickname && user_profile.nickname.trim() !== "") {
+        setLoadingComplete(true);
+        if (user_profile.nickname) {
             setProfileModalOpened(false);
           } else {
             setProfileModalOpened(true);
           }
     } catch (err) {
-        alert("유저 정보를 불러오지 못했습니다.");
+        alert("확인된 프로필 정보가 없습니다. 프로필을 생성해 주세요");
     }
 
 };
 useEffect(() => {fetchUserInfo();}, []);
 //프로필 업로드 확인 버튼 
 const handleProfileConfirm = async (e) => {
-    
+    if(!profileNick){
+        alert("입력하지 않은 정보가 있습니다!");
+        return;
+    }
+
+    if(!profileImageRef.current){
+        alert("입력하지 않은 정보가 있습니다!");
+        return;
+    }
 
     const formData = new FormData();
     formData.append('image', profileImageRef.current);           // MultipartFile
@@ -109,6 +119,8 @@ const handleProfileConfirm = async (e) => {
       }
     );
       console.log('프로필 생성 성공:', response.data);
+      setProfileModalOpened(false);
+      alert("프로필을 생성했습니다!");
     } catch (error) {
       console.error('프로필 생성 실패:', error);
     }
