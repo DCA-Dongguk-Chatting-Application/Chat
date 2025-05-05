@@ -15,7 +15,7 @@ import axios from 'axios'
 
 import { Client } from "@stomp/stompjs";
 import { GetUserInfo }  from "./component/UserInfo"
-
+import { GetUserProfile} from "./component/UserProfile"
 
 
 
@@ -38,6 +38,7 @@ export const Main = () => {
     const [roomates, setRoomatesList] = useState([]);//참여자목록
     const [roomName, setRoomName] = useState("방을 선택하세요")//방 제목
     const [profileNick, setProFileNick] = useState("");//프로필 생성- 닉네임
+    const [userProfile, setUserProfile] = useState(null);//최초 접속 시, 프로필이 있는지 검사용
    //프로필 생성- 프사
     const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -70,8 +71,23 @@ const handleImageChange = (e) => {
     }
  
 };
+//프로필을 불러와서, 이미 있다면 팝업창 false
+  const fetchUserInfo = async () => {
+    try {
+        const user_profile = await GetUserProfile(token);
+        setUserProfile(user_profile);
+        console.log("[setting_user_profile]유저 프로필", user_profile);
+        if (user_profile.nickname && user_profile.nickname.trim() !== "") {
+            setProfileModalOpened(false);
+          } else {
+            setProfileModalOpened(true);
+          }
+    } catch (err) {
+        alert("유저 정보를 불러오지 못했습니다.");
+    }
 
-
+};
+useEffect(() => {fetchUserInfo();}, []);
 //프로필 업로드 확인 버튼 
 const handleProfileConfirm = async (e) => {
     
