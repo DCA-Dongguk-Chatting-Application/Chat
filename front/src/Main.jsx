@@ -43,13 +43,14 @@ export const Main = () => {
    //프로필 생성- 프사
     const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
-    
+    const serverUrl = 'http://59.24.237.51:8080';
     const [client, setClient] = useState(null);
     const chatContainerRef = useRef(null);
     const [roomId, setRoomId] = useState("");//임시
     const [userInfo, setUserInfo] = useState(null);
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("accessToken");
+   
 
     const profileClose = () => {
         setProfileModalOpened(false);
@@ -78,7 +79,7 @@ const handleImageChange = (e) => {
         const user_profile = await GetUserProfile(token);
         setUserProfile(user_profile);
         console.log("[setting_user_profile]유저 프로필", user_profile);
-        setLoadingComplete(true);
+        setLoadingComplete(true);//로딩 검사
         if (user_profile.nickname) {
             setProfileModalOpened(false);
           } else {
@@ -122,6 +123,7 @@ const handleProfileConfirm = async (e) => {
       console.log('프로필 생성 성공:', response.data);
       setProfileModalOpened(false);
       alert("프로필을 생성했습니다!");
+      navigate(0);
     } catch (error) {
       console.error('프로필 생성 실패:', error);
     }
@@ -363,7 +365,13 @@ const handleCreateRoom = async () => {
                     onClick={() => handleRoomClick(room.id, room.roomName)}
                 />
                 ))}
-                <button class = "left-banner-room-add-button" onClick = {ToggleAddRoom}>추가</button>
+                <button class = "left-banner-room-add-button" onClick = {ToggleAddRoom}>
+                    <img
+                        className="room-add-icon"
+                        src={require('./assets/add.png')}
+                        alt="기본 프로필 이미지"
+                    />
+                </button>
                 {isRoomAddModalOpened && (
                     <div class = "modal-overlay">
                         <div class = "left-banner-room-add-modal-container">
@@ -413,11 +421,27 @@ const handleCreateRoom = async () => {
             </div>
             <div class = "left-banner-profile-container">
                  <div class = "left-banner-my-profile" onClick = {goSetting}>
-                    <img
-                        src={require(`./assets/profile-user.png`)}
-                        alt="close icon"
-                        className="profile-icon"
-                    />
+                
+
+                    {loading==false ? (
+                            <img
+                            className="profile-icon-main"
+                            src={require('./assets/profile-user.png')}
+                            alt="기본 프로필 이미지"
+                            />
+                        ) : userProfile.imageUrl ? (
+                            <img
+                            className="profile-icon-main-real"
+                            src={`${serverUrl}${userProfile.imageUrl}`}
+                            alt="User profile"
+                            />
+                        ) : (
+                            <img
+                            className="profile-icon-main"
+                            src={require('./assets/profile-user.png')}
+                            alt="기본 프로필 이미지"
+                            />
+                    )}
                  </div>
             </div>
 
