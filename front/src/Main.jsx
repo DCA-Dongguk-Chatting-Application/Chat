@@ -411,7 +411,13 @@ const handleCreateRoom = async () => {
 
             </div>
             <div class = "left-banner-profile-container">
-                 <div class = "left-banner-my-profile" onClick = {goSetting}>내프사</div>
+                 <div class = "left-banner-my-profile" onClick = {goSetting}>
+                    <img
+                        src={require(`./assets/profile-user.png`)}
+                        alt="close icon"
+                        className="profile-icon"
+                    />
+                 </div>
             </div>
 
             {ismymenuModalOpened && (

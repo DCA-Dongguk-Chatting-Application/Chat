@@ -11,7 +11,7 @@ function RoomList({ id, name, onClick }) {
         onClick(id, name);
     };
 
-    const new_name = name.slice(0, 3);
+    const new_name = name.slice(0, 1);
 
     const handleMouseEnter = (e) => {
         const rect = e.target.getBoundingClientRect();
@@ -35,7 +35,7 @@ function RoomList({ id, name, onClick }) {
                 onMouseLeave={handleMouseLeave}
             >
                 <div className="left-banner-room-icon-text">{new_name}</div>
-                <div style={{ color: 'red' }}>#{id}</div>
+                {/* <div style={{ color: 'red' }}>#{id}</div> */}
             </div>
 
             {/* React Portal을 사용하여 Tooltip을 body 태그에 렌더링 */}
