@@ -261,10 +261,9 @@ const handleInvite = (friend) => {
     };
     const ToggleExitRoom = () => {//나가기 버튼 클릭 후 팝업
         setRoomId(null);
+        setfriendlistswitched(true);
     };
-    const ToggleFriendListSwitch = () => {//누르면 친구목록, 참여자목록 전환
-        setfriendlistswitched(!friendlistswitched);
-    };
+
     
     const navigate = useNavigate();
       const goSetting = () => {
@@ -274,6 +273,7 @@ const handleInvite = (friend) => {
     const handleRoomClick = (id, name) => {
         setRoomId(id);
         setRoomName(name);
+        setfriendlistswitched(false);
     };
 
 //채팅방 생성기능 구현 (아직 1대1 채팅만 구현)
@@ -511,13 +511,7 @@ const handleCreateRoom = async () => {
         <div class = "right-banner">
             <div class = "title-friend-list-container">
                 <h3 class = "title-friend-list">{friendlistswitched? ("친구목록"):("참가자")}</h3>
-                <div class = "title-switch-button" onClick = {ToggleFriendListSwitch}>
-                    <img
-                        src={require(`./assets/switch.png`)}
-                        alt="close icon"
-                        className="close-icon"
-                    />
-                </div>
+               
             </div>
             
             <div className="right-banner-friend-list-zone">
