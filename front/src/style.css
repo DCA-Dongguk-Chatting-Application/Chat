@@ -697,6 +697,7 @@
     margin : 10px;
     width : 60%;
     font-weight: 500;
+    color : #D4D4D4;
 }
 
 .right-banner-online-indicator{
@@ -989,6 +990,10 @@
     justify-content: center;
 }
 
+.title-friend-list{
+    color :#222222
+}
+
 .title-switch-button{
     position : absolute;
     right : 0%;
@@ -1092,31 +1097,37 @@
 .setting-name-tag{
     position : absolute;
     left : 15%;
+    color :#9F9D9D;
 }
 
 .setting-phone-tag{
     position : absolute;
     left : 15%;
+    color :#9F9D9D;
 }
 
 .setting-mail-tag{
     position : absolute;
     left : 15%;
+    color :#9F9D9D;
 }
 
 .setting-name-user{
     position : absolute;
     left : 45%;
+    color :#222222
 }
 
 .setting-phone-user{
     position : absolute;
     left : 45%;
+    color :#222222;
 }
 
 .setting-mail-user{
     position : absolute;
     left : 45%;
+    color :#222222;
 }
 
 .setting-back-button{
@@ -1471,6 +1482,16 @@
     background-color: #cccccc;
     border-radius : 5px;
     overflow-y: auto;
+}
+
+.no-friend-requests{
+    width : 175px;
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+    color :#363535;
+    font-size : 20px;
 }
 
 .requestlist-container{

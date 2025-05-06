@@ -275,35 +275,39 @@ useEffect(() => {
             </div>
           )}
           
-        {showFriendModal && (
-          <div class = "modal-overlay">
-            <div class = "modal-setting-friend-container">
-              <div class = "modal-setting-friend-close" onClick={toggleFriendModal}>
-                <img
-                  src={require(`./assets/close.png`)}
-                  alt="close icon"
-                  className="close-icon"
-                  />
-              </div>
-              <div>
-                  <div class = "setting-mode-1-text">받은 친구신청</div>
-                  {/* <div class = "setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청하기</div> */}
-                  <div class = "setting-mode-requested-container">
-                  {friendReqlist.map((req, index) => (
-                    <RequestList
-                    key = {index}
-                    id = {req.userId}
-                    myId = {userId}
-                    name = {req.nickname}
-                    onAccept={handleAccept}
+          {showFriendModal && (
+              <div className="modal-overlay">
+                <div className="modal-setting-friend-container">
+                  <div className="modal-setting-friend-close" onClick={toggleFriendModal}>
+                    <img
+                      src={require(`./assets/close.png`)}
+                      alt="close icon"
+                      className="close-icon"
                     />
-                ))}
+                  </div>
+                  <div>
+                    <div className="setting-mode-1-text">받은 친구신청</div>
+                    {/* <div className="setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청하기</div> */}
+                    <div className="setting-mode-requested-container">
+                      {friendReqlist.length === 0 ? (
+                        <div className="no-friend-requests">친구신청이 없습니다</div>
+                      ) : (
+                        friendReqlist.map((req, index) => (
+                          <RequestList
+                            key={index}
+                            id={req.userId}
+                            myId={userId}
+                            name={req.nickname}
+                            onAccept={handleAccept}
+                          />
+                        ))
+                      )}
+                    </div>
                   </div>
                 </div>
+              </div>
+            )}
 
-            </div>
-          </div>
-        )}
 
         {showAddFriendModal && (
           <div class = "modal-overlay">
