@@ -258,7 +258,7 @@
 
 .message-send-button{
     position : absolute;
-    width : 80px;
+    width : 5%;
     height : 40px;
     border-radius : 5px;
     border : none;
@@ -681,6 +681,7 @@
 .right-banner-freind-name-container{
     margin : 10px;
     width : 60%;
+    font-weight: 500;
 }
 
 .right-banner-online-indicator{
@@ -1388,7 +1389,7 @@
 }
 
 .request-o{
-    width : 20px;
+    width : 50px;
     height : 20px;
     background-color: white;
     border-radius : 5px;
@@ -1396,7 +1397,7 @@
     align-items: center;
     justify-content: center;
     position : absolute;
-    right : 50px;
+    right : 20px;
 }
 
 .request-x{

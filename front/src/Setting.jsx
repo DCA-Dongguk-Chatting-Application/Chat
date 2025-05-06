@@ -2,9 +2,10 @@ import React , { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom"; 
 import "./style.css";
 import RequestList from "./component/RequestList"; //친구신청목록 컴포넌트
-import {friendRequests} from "./Testdata/testdata_friendrequest"; // 친신 목록
+//import {friendRequests} from "./Testdata/testdata_friendrequest"; // 친신 목록
 import { GetUserInfo }  from "./component/UserInfo"
 import { GetUserProfile} from "./component/UserProfile"
+import { GetRequest} from "./component/UserFriendRequests"
 import axios from 'axios'
 
 
@@ -15,10 +16,11 @@ export const Setting = () => {
   const [userProfile, setUserProfile] = useState(null);//프로필 정보
   const [loading, setLoadingComplete] = useState(false);//로딩 여부 검ㅅㅏ
   const [newImageFile, setNewImageFile] = useState(null);//프사 
-
+  const [friendReqlist, setFriendReqList] = useState([]);//친구요청 목록
   const [editPhone, setEditPhone] = useState("");//폰
   const [editEmail, setEditEmail] = useState("");//멜
   const token = localStorage.getItem("accessToken");
+  const userId = localStorage.getItem("userId");
   const serverUrl = 'http://59.24.237.51:8080';
   // ✅ 1. 유저 정보, 유저 프로필 가져오기
   const fetchUserInfo = async () => {
@@ -40,10 +42,26 @@ export const Setting = () => {
 };
   
   useEffect(() => {
-      
-      
+  
       fetchUserInfo();
   }, []);
+
+
+//친구 요청 목록을 불러오기
+const fetchFriendReq = async () => {
+        try {
+          const data = await GetRequest(); 
+          setFriendReqList(data); 
+          console.log("친구 요청 목록:", data); 
+        } catch (err) {
+            alert("친구요청 정보를 불러오지 못했습니다.");
+        }
+    };
+useEffect(() => {
+  
+    
+    fetchFriendReq();
+}, []);
 
  
 //프로필수정
@@ -139,6 +157,11 @@ export const Setting = () => {
   const IdClick = () => {
     alert("ID는 바꿀 수 없습니다");
   }
+
+  const handleAccept = (acceptedId) => {
+    // 수락된 요청을 상태에서 제거
+    fetchFriendReq();
+  };
   
 
     return (
@@ -263,11 +286,13 @@ export const Setting = () => {
                   <div class = "setting-mode-1-text">받은 친구신청</div>
                   <div class = "setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청하기</div>
                   <div class = "setting-mode-requested-container">
-                  {friendRequests.map((req, index) => (
+                  {friendReqlist.map((req, index) => (
                     <RequestList
                     key = {index}
-                    id = {req.id}
-                    name = {req.name}
+                    id = {req.userId}
+                    myId = {userId}
+                    name = {req.nickname}
+                    onAccept={handleAccept}
                     />
                 ))}
                   </div>
