@@ -361,7 +361,8 @@
 }
 
 .chat-bubble-me{
-    background-color : white;
+    background-color : #696969;
+    color : white;
     padding : 10px;
     border-top-left-radius: 15px;
     border-top-right-radius: 0px;
@@ -389,6 +390,84 @@
     scrollbar-width: thin;     
     box-sizing: border-box;
     scrollbar-width : none;
+}
+
+.profile-modal-container{
+    background :rgb(105, 104, 104);
+    width : 700px;
+    height : 500px;
+    border-radius : 10px;
+    display : flex;
+    position : relative;
+}
+
+.profile-modal-instruction{
+    position : absolute;
+    color : white;
+    font-size : 40px;
+    top : 15%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-sub-intro{
+    position : absolute;
+    color : white;
+    font-size : 20px;
+    top : 30%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-name-textbox{
+    position : absolute;
+
+    font-size : 20px;
+    top : 50%;
+    left : 60%;
+    padding: 10px;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-name-guide{
+    position : absolute;
+    font-size : 25px;
+    color : white;
+    top : 50%;
+    left : 20%;
+    padding: 10px;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-image-guide{
+    position : absolute;
+    font-size : 25px;
+    color : white;
+    top : 65%;
+    left : 20%;
+    padding: 10px;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-image-upload{
+    position : absolute;
+    top : 65%;
+    left : 67%;
+    font-size : 20px;
+    transform: translate(-50%, -50%);
+}
+
+.profile-modal-confirm-button{
+    position : absolute;
+    font-size : 15px;
+    background-color : white;
+    top : 85%;
+    left : 50%;
+    padding: 5px;
+    transform: translate(-50%, -50%);
+    width : 60px;
+    text-align: center;
+    border-radius : 5px;
 }
 
 .friend-modal-container{
@@ -606,13 +685,13 @@
 .left-banner-room-icon{
     width : 50px;
     height : 50px;
-    background-color : white;
+    background-color : rgba(51, 51, 51, 0.637);
     margin-left : 20px;
     margin-right : 20px;
     margin-top : 30px;
     margin-bottom : 30px;
     border-radius : 5px;
-    border : 2px solid white;
+    border : 2px solid rgb(46, 46, 46);
     display : flex;
     position : relative;
 }
@@ -639,7 +718,7 @@
     height : 60px;
     margin : 15px;
     border-radius : 10px;
-    background-color : white;
+    background-color : rgba(51, 51, 51, 0.637);
 }
 
 .left-banner-my-profile:hover{
@@ -675,6 +754,15 @@
     
 }
 
+.left-banner-room-icon-text{
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform : translate(-50%, -50%);
+    color : white;
+    font-size : 25px;
+}
+
 .left-banner-room-add-modal-container{
     background :rgb(105, 104, 104);
     width : 500px;
@@ -690,6 +778,15 @@
     left : 50%;
     transform: translate(-50%, 0%);
     font-size : 19px;
+}
+
+.profile-icon{
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform : translate(-50%, -50%);
+    width : 40px;
+    height : 40px;
 }
 
 .arrow-icon{
@@ -832,7 +929,16 @@
     left : 50px;
     width : 180px;
     height : 180px;
-    background-color : white;
+    background-color : rgb(155, 155, 155);
+    border-radius : 20px;
+}
+
+.setting-profile-picture-real{
+    
+    
+    width : 180px;
+    height : 180px;
+    
     border-radius : 20px;
 }
 
@@ -989,7 +1095,7 @@
 .setting-modal-text-1{
     position : absolute;
     font-size : 30px;
-    top : 35%;
+    top : 25%;
     left : 10%;
     transform: translate(0%, -50%);
 }
@@ -997,7 +1103,7 @@
 .setting-modal-text-2{
     position : absolute;
     font-size : 30px;
-    top : 47%;
+    top : 37%;
     left : 10%;
     transform: translate(0%, -50%);
 }
@@ -1005,7 +1111,7 @@
 .setting-modal-text-3{
     position : absolute;
     font-size : 30px;
-    top : 59%;
+    top : 49%;
     left : 10%;
     transform: translate(0%, -50%);
 }
@@ -1021,7 +1127,7 @@
 .setting-modal-text-info{
     position : absolute;
     font-size : 30px;
-    top : 15%;
+    top : 10%;
     left : 50%;
     transform: translate(-50%, -50%);
 }
@@ -1047,19 +1153,21 @@
     position : absolute;
     height : 40px;
     width : 340px;
-    top : 35%;
+    top : 25%;
     left : 40%;
     transform: translate(0%, -50%);
     font-size : 26px;
     border : none;
     border-radius : 5px;
+    background-color :rgb(87, 87, 87);
+    color : rgb(59, 59, 59);
 }
 
 .setting-modal-textbox-2{
     position : absolute;
     height : 40px;
     width : 340px;
-    top : 47%;
+    top : 37%;
     left : 40%;
     transform: translate(0%, -50%);
     font-size : 26px;
@@ -1071,7 +1179,7 @@
     position : absolute;
     height : 40px;
     width : 340px;
-    top : 59%;
+    top : 49%;
     left : 40%;
     transform: translate(0%, -50%);
     font-size : 26px;
@@ -1234,4 +1342,14 @@
     position: absolute;
     left :
     20px;
+}
+
+.setting-profile-picture-none{
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+    width : 130px;
+    height : 130px;
+
 }

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -36,8 +37,9 @@ public class ProfileService {
         userRepository.save(findUser);
 
         return ProfileResponse.from(savedProfile);
-
     }
+
+
 
     private String saveProfileImage(MultipartFile file) throws IOException{
         try{
@@ -65,4 +67,14 @@ public class ProfileService {
     private String getExtension(String originalFilename){
         return originalFilename.substring(originalFilename.lastIndexOf("."));
     }
+
+    public ProfileResponse getUserProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        UserProfile profile = user.getProfile();
+
+        return ProfileResponse.from(profile);
+    }
+
 }

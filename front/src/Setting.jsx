@@ -3,20 +3,49 @@ import { useNavigate } from "react-router-dom";
 import "./style.css";
 import RequestList from "./component/RequestList"; //친구신청목록 컴포넌트
 import {friendRequests} from "./Testdata/testdata_friendrequest"; // 친신 목록
+import { GetUserInfo }  from "./component/UserInfo"
+import { GetUserProfile} from "./component/UserProfile"
 import axios from 'axios'
 
 
 
 export const Setting = () => {
-  const fileInputRef = useRef(null);
+  const [requestId, setRequestId] = useState("")//친구신청 창에서, 입력한 ID값
+  const [userInfo, setUserInfo] = useState(null);//회원가입시 개인정보
+  const [userProfile, setUserProfile] = useState(null);//프로필 정보
+  const [loading, setLoadingComplete] = useState(false);//로딩 여부 검ㅅㅏ
+  const [newImageFile, setNewImageFile] = useState(null);//프사 
 
-  const handleProfilePicUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      alert(`선택한파일: ${file.name}`);
-    
+  const [editPhone, setEditPhone] = useState("");//폰
+  const [editEmail, setEditEmail] = useState("");//멜
+  const token = localStorage.getItem("accessToken");
+  const serverUrl = 'http://59.24.237.51:8080';
+  // ✅ 1. 유저 정보, 유저 프로필 가져오기
+  const fetchUserInfo = async () => {
+    try {
+        const user = await GetUserInfo(token);
+        const user_profile = await GetUserProfile(token);
+        setUserInfo(user);
+        setUserProfile(user_profile);
+        
+        setEditPhone(user.phoneNumber);
+        setEditEmail(user.email);
+        setLoadingComplete(true);
+        console.log("로딩끝")
+        console.log("[setting_user]유저 정보:", user);
+        console.log("[setting_user_profile]유저 프로필", user_profile);
+    } catch (err) {
+        alert("유저 정보를 불러오지 못했습니다.");
     }
-  };
+};
+  
+  useEffect(() => {
+      
+      
+      fetchUserInfo();
+  }, []);
+
+ 
 //프로필수정
   const [showModal, setShowModal] = useState(false);
       const toggleModal = () => {
@@ -38,43 +67,121 @@ export const Setting = () => {
     navigate("/main"); 
   };
 
-//친구정보 불러오기
-const userId = 4;///임시시
-const [friendRequests, setFriendRequests] = useState([]);
-useEffect(() => {
-  axios.get(`/api/requests/${userId}`)
-      .then((response) => {
-          setFriendRequests(response.data);
-          console.log("친구신청목록 부름");
-      })
-      .catch((error) => {
-          console.error("친구신청목록 불러오기 실패", error);
-      });
-}, []);  
+  const sendRequest = async () => {///친구 신청 버튼 누르면 작동
+    const token = localStorage.getItem("accessToken");
   
-    
+    if (!requestId) {
+      alert("ID를 입력해주세요.");
+      return;
+    }
+  
+    if (!userInfo || !userInfo.id) {
+      alert("유저 정보를 불러오지 못했습니다.");
+      return;
+    }
+
+    if (userInfo.id == requestId) {
+      alert("자기 자신에게는 걸 수 없습니다");
+      return;
+    }
+    try {
+      const response = await axios.post(
+        "/api/friends/request", 
+        {
+          requesterId: userInfo.id,
+          receiverId: requestId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      alert("친구신청을 보냈습니다");
+      console.log("친구 요청 응답:", response.data);
+    } catch (error) {
+      console.error("친구신청 중 에러:", error);
+      alert("실패하였습니다. 존재하는 ID가 맞는지 확인하세요");
+    }
+  };
+  //프로필 수정
+  const handleSubmitProfileEdit = async () => {
+    try {
+      const payload = {
+        username: userInfo.username,
+        phoneNumber: editPhone.trim() ? editPhone : userInfo.phoneNumber,
+        email: editEmail.trim() ? editEmail : userInfo.email,
+      };
+  
+      const response = await axios.put('/api/user', payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.status === 200) {
+        console.log('프로필 수정 성공:', response.data);
+        alert('프로필이 성공적으로 수정되었습니다!');
+        setShowModal(false);//창닫기
+        fetchUserInfo();//새로고침
+      } else {
+        console.error('프로필 수정 실패:', response);
+        alert('프로필 수정에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('프로필 수정 중 오류 발생:', error);
+      alert('서버와 통신 중 오류가 발생했습니다.');
+    }
+  };
+
+  const IdClick = () => {
+    alert("ID는 바꿀 수 없습니다");
+  }
+  
 
     return (
+
+
+      
       <div class = "background">
           <div class = "setting-profile-container">
-              <div class = "setting-profile-picture" onClick={() => fileInputRef.current.click()}>클릭하여 업로드</div>
+              <div class = "setting-profile-picture" >
+              {loading==false ? (
+                "Loading..."
+              ) : userProfile.imageUrl ? (
+                <img
+                  className="setting-profile-picture-real"
+                  src={`${serverUrl}${userProfile.imageUrl}`}
+                  alt="User profile"
+                />
+              ) : (
+                <img
+                  className="setting-profile-picture-none"
+                  src={require('./assets/profile-user.png')}
+                  alt="기본 프로필 이미지"
+                />
+              )}
+
+              </div>
               <h3 class = "setting-profile-info-text">프로필 정보</h3>
-              <h1 class = "setting-nick">아아아ㄴ</h1>
+              <h1 class = "setting-nick">{loading ? userProfile.nickname : "Loading..."}</h1>
               
               <div class = "setting-info-container">
                 <div class = "setting-name-zone">
-                  <h1 class = "setting-name-tag">이름</h1>
-                  <h1 class = "setting-name-user">땡땡떙</h1>
+                  <h1 class = "setting-name-tag">ID</h1>
+                  <h1 class = "setting-name-user">{loading ? userInfo.username : "Loading..."}</h1>
                 </div>
               
                 <div class = "setting-phone-zone">
                   <h1 class = "setting-phone-tag">전화번호</h1>
-                  <h1 class = "setting-phone-user">010-1577-1577</h1>
+                  <h1 class = "setting-phone-user">{loading ? userInfo.phoneNumber : "Loading..."}</h1>
                 </div>
               
                 <div class = "setting-mail-zone">
                   <h1 class = "setting-mail-tag">E-mail</h1>
-                  <h1 class = "setting-mail-user">parrot@email.com</h1>
+                  <h1 class = "setting-mail-user">{loading ? userInfo.email : "Loading..."}</h1>
                 </div>
               </div>
               
@@ -109,24 +216,24 @@ useEffect(() => {
               <div class = "setting-modal-container">
                 <div class = "setting-modal-close-button" onClick={toggleModal}>
                   <img
-                            src={require(`./assets/close.png`)}
-                            alt="close icon"
-                            className="close-icon"
+                    src={require(`./assets/close.png`)}
+                    alt="close icon"
+                    className="close-icon"
                   />
                 </div>
-                <div class = "setting-modal-text-info">정보 수정</div>
+                <div class = "setting-modal-text-info">개인정보 수정</div>
 
-                <div class = "setting-modal-text-1">설명</div>
-                <div class = "setting-modal-text-2">이름</div>
-                <div class = "setting-modal-text-3">전화번호</div>
-                <div class = "setting-modal-text-4">E-mail</div>
+                <div class = "setting-modal-text-1">ID</div>
+                <div class = "setting-modal-text-2">전화번호</div>
+                <div class = "setting-modal-text-3">이메일</div>
+                <div class = "setting-modal-text-4"></div>
 
-                <input class = "setting-modal-textbox-1"></input>
-                <input class = "setting-modal-textbox-2"></input>
-                <input class = "setting-modal-textbox-3"></input>
-                <input class = "setting-modal-textbox-4"></input>
+                <input class = "setting-modal-textbox-1" value = {userInfo.username} onClick={IdClick}></input>
+                <input class = "setting-modal-textbox-2"  placeholder = {userInfo.phoneNumber} onChange={(e) => setEditPhone(e.target.value)}></input>
+                <input class = "setting-modal-textbox-3"  placeholder = {userInfo.email} onChange={(e) => setEditEmail(e.target.value)}></input>
+                
 
-                <div class = "setting-modal-ok">확인</div>
+                <div class = "setting-modal-ok" onClick={handleSubmitProfileEdit}>확인</div>
               </div>
             
             </div>
@@ -146,10 +253,10 @@ useEffect(() => {
                 <div>
                   <div class = "setting-mode-1-text">친구 신청하기</div>
                   <div class = "setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청받기</div>
-                  <input class = "setting-mode-searchbox" placeholder = "userID 입력"/>
-                  <div class = "setting-mode-confirm">검색</div>
-                  <div class = "setting-searched-name">여기에 검색된 이름표시</div>
-                  <div class = "setting-mode-confirm-ok">친구신청 보내기</div>
+                  <input class = "setting-mode-searchbox" placeholder = "userID 입력" onChange={(e) => setRequestId(e.target.value)}/>
+                  {/*<div class = "setting-mode-confirm">검색</div>*/}
+                  <div class = "setting-searched-name">아이디 입력후 확인을 누르세요</div>
+                  <div class = "setting-mode-confirm-ok" onClick = {sendRequest}>친구신청 보내기</div>
                 </div>
                 ) : (
                 <div>
@@ -169,14 +276,6 @@ useEffect(() => {
             </div>
           </div>
         )}
-
-          <input
-            type="file"
-            accept="image/*"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={handleProfilePicUpload}
-          />
 
       </div>
     );

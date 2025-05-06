@@ -10,8 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/profile/**")
-                .addResourceLocations("file:C:/Users/thsdn/Desktop/Chat/profileImages/"); // 실제 디스크 경로
+                .addResourceLocations("file:C:/chat/profileImages");
     }
+
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

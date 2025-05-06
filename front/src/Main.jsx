@@ -6,47 +6,127 @@ import ChatBubble from "./component/ChatBubble"; //말풍선 컴포넌트
 import FriendList from "./component/FriendList"; // 친구목록 컴포넌트
 import MateList from "./component/MateList"; // 참여자 목록 보여주는 컴포넌트
 import RoomList from "./component/RoomList"; // 방 목록 보여주는 컴포넌트
+import WebSocketConnector from "./component/WebSocketConnector";
 import {chatlog} from "./Testdata/testdata_chat"; //대화목록
 import {friendlist} from "./Testdata/testdata_friendlist"; //친구목록
 import {roomates} from "./Testdata/testdata_roomates"; // 참여자 목록
 import {rooms} from "./Testdata/testdata_roomlist"; // 방 목록
 import axios from 'axios'
-import SockJS from "sockjs-client";
+
 import { Client } from "@stomp/stompjs";
 import { GetUserInfo }  from "./component/UserInfo"
+import { GetUserProfile} from "./component/UserProfile"
 
 
 
 export const Main = () => {
-    
+    const [errorMessage, setErrorMessage] = useState("");
     const [isHovered, setIsHovered] = useState(false)
     const [ismymenuModalOpened, setmymenuModalOpened] = useState(false)
-    const [isRoomAddModalOpened, setRoomAddModalOpened] = useState(false)
-    const [isExitModalOpened, setExitModalOpened] = useState(false)
+    const [isRoomAddModalOpened, setRoomAddModalOpened] = useState(false)//방 추가버튼 누를시 모달창
+    const [isExitModalOpened, setExitModalOpened] = useState(false)//방 나가기 클릭시 모달
+    const [isProfileModalOpened, setProfileModalOpened] = useState(true)//로그인 후, 프로필 정보 쓰는 모달이 나온다
     const [friendlistswitched, setfriendlistswitched] = useState(true)
     const [inviteList, setInviteList] = useState([]); //방 생성시초대목록
+    const [newRoomname, setNewRoomname] = useState(""); //방 생성시 제목
     const [searchTerm, setSearchTerm] = useState("");//방 생성시 친구검색색필터
     const [textbox, setTextbox] = useState("");//채팅칸 입력내용 받음
     const [chatlog, setChatLog] = useState([]);//채팅내역 배열열
     const [rooms, setRooms] = useState([]);//방목록
-    const [friendlist, setFriendList] = useState([]);//친구목록
+    const [friendlist, setFriendList] = useState([]);//친구 목록 (1초마다 자동 갱신됨)
+    const [displayFriendList, setDisplayFriendList] = useState([]);//친구 초대시에만 임시로 쓰는 부분. 갱신 버그를 방지하기 위해 친구 목록을 복사해 저장
     const [roomates, setRoomatesList] = useState([]);//참여자목록
     const [roomName, setRoomName] = useState("방을 선택하세요")//방 제목
+    const [profileNick, setProFileNick] = useState("");//프로필 생성- 닉네임
+    const [userProfile, setUserProfile] = useState(null);//최초 접속 시, 프로필이 있는지 검사용
+    const [loading, setLoadingComplete] = useState(false);//프로필로딩 여부 검ㅅㅏ
+   //프로필 생성- 프사
+    const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
-    const clientRef = useRef(null);
+    
+    const [client, setClient] = useState(null);
     const chatContainerRef = useRef(null);
     const [roomId, setRoomId] = useState("");//임시
     const [userInfo, setUserInfo] = useState(null);
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("accessToken");
 
-
-//파일 업로드  
+    const profileClose = () => {
+        setProfileModalOpened(false);
+    }
+//파일 업로드  (채팅버튼)
     const handleFileUpload = (e) => {
+       
         const file = e.target.files[0];
         if (file) {
             alert(`선택된 파일: ${file.name}`);
             // 여기에 서버 연결 api 추가가
         }
+        
     };
+//프사 설정 (프로필 생성)
+const handleImageChange = (e) => {
+    profileImageRef.current = e.target.files[0];
+    if(profileImageRef.current){
+        alert(`선택한 파일 : ${profileImageRef.current.name}`)
+    }
+ 
+};
+//프로필을 불러와서, 이미 있다면 팝업창 false
+  const fetchUserInfo = async () => {
+    try {
+        const user_profile = await GetUserProfile(token);
+        setUserProfile(user_profile);
+        console.log("[setting_user_profile]유저 프로필", user_profile);
+        setLoadingComplete(true);
+        if (user_profile.nickname) {
+            setProfileModalOpened(false);
+          } else {
+            setProfileModalOpened(true);
+          }
+    } catch (err) {
+        alert("확인된 프로필 정보가 없습니다. 프로필을 생성해 주세요");
+    }
+
+};
+useEffect(() => {fetchUserInfo();}, []);
+//프로필 업로드 확인 버튼 
+const handleProfileConfirm = async (e) => {
+    if(!profileNick){
+        alert("이름은 필수입니다!");
+        return;
+    }
+
+   
+    const formData = new FormData();
+    
+    if(profileImageRef.current){
+        
+        formData.append('image', profileImageRef.current);
+    }
+    // MultipartFile
+    formData.append('nickname', profileNick);     // 일반 문자열
+    formData.append('userId', userId);  
+    console.log('전송할 이미지:', profileImageRef.current);       // Long 타입, 문자열로 보내도 됨
+
+    try {
+      const response = await axios.post('/api/profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          
+        },
+        
+        
+      }
+    );
+      console.log('프로필 생성 성공:', response.data);
+      setProfileModalOpened(false);
+      alert("프로필을 생성했습니다!");
+    } catch (error) {
+      console.error('프로필 생성 실패:', error);
+    }
+    
+  };
 
 // ✅ 1. 유저 정보 가져오기
 useEffect(() => {
@@ -74,15 +154,43 @@ useEffect(() => {
         })
         .catch((err) => console.error("방 목록 불러오기 실패", err));
 
-    // 친구 목록 가져오기
-    axios.get(`/api/friends/${userInfo.id}`)
-        .then((res) => {
-            setFriendList(res.data);
-            console.log("친구목록 부름");
-        })
-        .catch((err) => console.error("친구 목록 불러오기 실패", err));
+ 
+    }, [userInfo]);
+
+        // 친구 목록 불러오기 및 polling (1초마다 갱신)
+useEffect(() => {
+    if (!userInfo) return;
+
+    const fetchFriendList = () => {
+        axios.get(`/api/friends/${userInfo.id}`)
+            .then((res) => {
+                setFriendList(res.data);
+                console.log("친구목록 갱신");
+            })
+            .catch((err) => console.error("친구 목록 갱신 실패", err));
+    };
+
+    const silenceFriendList = () => {
+        axios.get(`/api/friends/${userInfo.id}`)
+            .then((res) => {
+                setDisplayFriendList(res.data);
+                console.log("친추용 친구목록 받아옴");
+            })
+            .catch((err) => console.error("친구 목록 갱신 실패", err));
+    };
+
+    // 최초 실행
+    fetchFriendList();
+    silenceFriendList();//친구초대 기능용 리스트. 초대 기능 작동중 갱신되지 않게 조치
+    // 1초마다 polling, 온/오프라인 상태 실시간 반영을 위함
+    const intervalId = setInterval(fetchFriendList, 1000);
+
+
+    // 컴포넌트 언마운트 시 clear
+    return () => clearInterval(intervalId);
 
 }, [userInfo]);
+
 
 // ✅ 3. roomId가 선택된 후 참여자 목록과 채팅 기록 가져오기
 useEffect(() => {
@@ -105,38 +213,12 @@ useEffect(() => {
 
 }, [roomId]);
 
-// ✅ 4. 웹소켓 연결
-useEffect(() => {
-    if (!roomId) return;
 
-    const socket = new SockJS('/api/portfolio');
-    const client = new Client({
-        webSocketFactory: () => socket,
-        debug: (str) => console.log(str),
-        onConnect: () => {
-            console.log('웹소켓 연결됨');
-            client.subscribe(`/topic/chatroom/${roomId}`, (message) => {
-                const newMessage = JSON.parse(message.body);
-                setChatLog(prev => [...prev, newMessage]);
-            });
-        },
-        onStompError: (frame) => {
-            console.error('STOMP 오류', frame);
-        },
-    });
-
-    client.activate();
-    clientRef.current = client;
-
-    return () => {
-        client.deactivate();
-    };
-}, [roomId]);
 
 //메시지 전송 버튼 동작
 function sendMessage() {
     
-    const client = clientRef.current;
+    
     if (!client || !client.connected) {
         alert("STOMP에 연결되지 않았습니다. '채팅 연결' 버튼을 눌러주세요.");
         return;
@@ -162,27 +244,27 @@ useEffect(() => {
     }
   }, [chatlog]);
 //방 생성시 친구초대
-    const toggleInviteFriend = (friend) => {//방 생성시 친구초대
-        setInviteList((prev) => {
-          const exists = prev.find((f) => f.id === friend.id);
-          return exists
-            ? prev.filter((f) => f.id !== friend.id) // 이미 있으면 제거
-            : [...prev, friend]; // 없으면 추가
-        });
-      };
+const handleInvite = (friend) => {
+    setDisplayFriendList(displayFriendList.filter(f => f.userId !== friend.userId));
+    setInviteList([...inviteList, friend]);
+  };
+
+  const handleRemoveInvite = (friend) => {
+    setInviteList(inviteList.filter(f => f.userId !== friend.userId));
+    setDisplayFriendList([...displayFriendList, friend]);
+  };
     //각 팝업창 on/off관리
     const ToggleMyMenu = () => {//내 메뉴
-        setmymenuModalOpened(!ismymenuModalOpened);
+        // setmymenuModalOpened(!ismymenuModalOpened);
     };
     const ToggleAddRoom = () => {//방 추가시 안내창
         setRoomAddModalOpened(!isRoomAddModalOpened);
     };
     const ToggleExitRoom = () => {//나가기 버튼 클릭 후 팝업
-        setExitModalOpened(!isExitModalOpened);
+        setRoomId(null);
+        setfriendlistswitched(true);
     };
-    const ToggleFriendListSwitch = () => {//누르면 친구목록, 참여자목록 전환
-        setfriendlistswitched(!friendlistswitched);
-    };
+
     
     const navigate = useNavigate();
       const goSetting = () => {
@@ -192,13 +274,85 @@ useEffect(() => {
     const handleRoomClick = (id, name) => {
         setRoomId(id);
         setRoomName(name);
+        setfriendlistswitched(false);
     };
+
+//채팅방 생성기능 구현 (아직 1대1 채팅만 구현)
+const handleCreateRoom = async () => {
+    const invitedUserIds = inviteList.map(friend => friend.userId);//초대한 인원들의 ID을 모두 inviteList에 담는다
+    const roomName = newRoomname; // 예: "chat_123_456"
+    if (invitedUserIds.length == 0) {//0명일 경우 생성 불가
+      alert('아무도 초대하지 않았습니다');
+      return;
+    }
+
+    else if (invitedUserIds.length == 1){ // 1대1기능
+        try {
+            const response = await axios.post('/api/chatroom/create', {
+            roomName: roomName,
+            myId: userId,
+            partnerId: invitedUserIds[0]
+      });
+  
+      // 성공 시 처리
+            console.log('1대1 채팅방 생성 성공:', response.data);
+            const roomRes = await axios.get(`/api/chatroom/list/${userId}`);//방 생성후 리스트 재 로딩딩
+            setRooms(roomRes.data);
+
+            setRoomAddModalOpened(!isRoomAddModalOpened);
+        } catch (error) {
+            console.error('방 생성 실패:', error);
+            alert('방 생성에 실패했습니다.');
+        }
+    }
+
+    else if (invitedUserIds.length > 1){  // 1대n 기능
+        try {
+            invitedUserIds.push(userId);
+            const response = await axios.post('/api/chatroom/group', {
+            roomName: roomName,
+            userIds : invitedUserIds,
+      });
+  
+      // 성공 시 처리
+            console.log('1대n 채팅방 생성 성공:', response.data);
+            const roomRes = await axios.get(`/api/chatroom/list/${userId}`);
+            setRooms(roomRes.data);
+
+            setRoomAddModalOpened(!isRoomAddModalOpened);
+        } catch (error) {
+            console.error('방 생성 실패:', error);
+            alert('방 생성에 실패했습니다.');
+        }
+    }
+    
+  };
  
   
 
 //**본 메인 화면**//
     return (
     <div class = "background">
+        <WebSocketConnector token = {token} roomId = {roomId} setChatLog={setChatLog} setClient = {setClient}/>
+        {isProfileModalOpened && (
+            <div class = "modal-overlay">
+                <div class = "profile-modal-container">
+                    <div class = "profile-modal-instruction">환영합니다!</div>
+                    <div class = "profile-modal-sub-intro">진행하시려면 정보를 입력해주세요</div>
+                    <div class = "profile-modal-name-guide" >닉네임</div>
+                    <div className="profile-modal-image-guide">프로필 이미지</div>
+                    <input 
+                         type="file" 
+                        accept="image/*" 
+                        className="profile-modal-image-upload"
+                        onChange={handleImageChange}
+                    />
+                    <input class = "profile-modal-name-textbox" placeholder="닉네임 입력" onChange={(e) => setProFileNick(e.target.value)}/>
+                    <div class = "profile-modal-confirm-button" onClick = {handleProfileConfirm}>확인</div>
+                    <div class = "profile-modal-close" onClick={profileClose}>닫기</div>
+                </div>
+            </div>
+        )}
         <div class = "left-banner">
             <div class = "left-banner-zone">
                 {rooms.map((room, index) => (
@@ -221,15 +375,15 @@ useEffect(() => {
                                 className="close-icon"
                             /> </div>
                             <div class = "left-banner-room-add-friendlist-container">
-                            {friendlist
-                            .filter((friend) =>friend.nickname?.toLowerCase().includes(searchTerm.toLowerCase()))
+                            {displayFriendList
+                            .filter((friend) =>String(friend.userId)?.toLowerCase().includes(searchTerm.toLowerCase()))
                             .map((friend) => (
                                 <div
                                     key={friend.userId}
                                     className="friend-list-item"
-                                    onClick={() => toggleInviteFriend(friend)}
+                                    onClick={() => handleInvite(friend)}
                                 >
-                                {friend.userId}
+                                {friend.userId}-{friend.nickname}
                             </div>
                             ))}
                             </div>
@@ -242,23 +396,29 @@ useEffect(() => {
                                 <div
                                     key={friend.userId}
                                     className="invite-list-item"
-                                    onClick={() => toggleInviteFriend(friend)}
+                                    onClick={() => handleRemoveInvite(friend)}
                                 >
-                                    {friend.userId}
+                                    {friend.userId}-{friend.nickname}
                                 </div>
                                 ))}
                             </div>
                             <div class = "left-banner-room-add-invitelist-container-text">초대 목록</div>
                             <input class = "left-banner-room-add-searchbox" placeholder="검색" value = {searchTerm} onChange = {(e)=>setSearchTerm(e.target.value)}/>
-                            <input class = "left-banner-room-add-room-title-textbox" placeholder = "방 제목은?"/>
-                            <div class = "left-banner-room-ok">확인</div>
+                            <input class = "left-banner-room-add-room-title-textbox" placeholder = "방 제목은?"  onChange={(e) => setNewRoomname(e.target.value)}/>
+                            <div class = "left-banner-room-ok" onClick={handleCreateRoom}>확인</div>
                         </div>
                     </div>
                 )}
 
             </div>
             <div class = "left-banner-profile-container">
-                 <div class = "left-banner-my-profile" onClick = {ToggleMyMenu}>내프사</div>
+                 <div class = "left-banner-my-profile" onClick = {goSetting}>
+                    <img
+                        src={require(`./assets/profile-user.png`)}
+                        alt="close icon"
+                        className="profile-icon"
+                    />
+                 </div>
             </div>
 
             {ismymenuModalOpened && (
@@ -311,7 +471,7 @@ useEffect(() => {
         <div class = "center-banner" ref = {chatContainerRef}>
             <div class = "center-banner-top">
                 <div class = "center-banner-top-text">{roomName}</div>
-                <div class = "center-banner-top-room-exit-button" onClick={ToggleExitRoom}>
+                <div class = "center-banner-top-room-exit-button" onClick={ToggleExitRoom}채>
                     <img
                         src={require(`./assets/door.png`)}
                         alt="close icon"
@@ -352,19 +512,13 @@ useEffect(() => {
         <div class = "right-banner">
             <div class = "title-friend-list-container">
                 <h3 class = "title-friend-list">{friendlistswitched? ("친구목록"):("참가자")}</h3>
-                <div class = "title-switch-button" onClick = {ToggleFriendListSwitch}>
-                    <img
-                        src={require(`./assets/switch.png`)}
-                        alt="close icon"
-                        className="close-icon"
-                    />
-                </div>
+               
             </div>
             
             <div className="right-banner-friend-list-zone">
              {friendlistswitched
                 ? friendlist.map((friend, index) => (
-                    <FriendList key={index} id={friend.userId} name={friend.userId} />
+                    <FriendList key={index} id={friend.userId} name={friend.nickname} isOnline = {friend.online}  />
                 ))
                 : roomates.map((mate, index) => (
                     <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} />

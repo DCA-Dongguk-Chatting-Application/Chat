@@ -45,6 +45,7 @@ export const Login = () => {
             if (response.status === 200 && accessToken) {
                 localStorage.setItem("accessToken", accessToken);
                 localStorage.setItem("userId", user.id);
+                console.log(`userid = ${user.id}`)
                 localStorage.setItem("username", user.username);
                 localStorage.setItem("userEmail", user.email);
              
@@ -106,7 +107,7 @@ export const Login = () => {
                     placeholder = "PW"
                     onChange={(e) => setPwRegister(e.target.value)}></input>
                 <input class = "register-name-textbox"
-                    placeholder = "이름"
+                    placeholder = "이메일"
                      onChange={(e) => setNameRegister(e.target.value)}></input>
                 <input class = "register-phone-textbox"
                     placeholder = "전화번호"

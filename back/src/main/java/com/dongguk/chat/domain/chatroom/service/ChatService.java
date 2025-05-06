@@ -79,7 +79,11 @@ public class ChatService {
         chatRoom.getParticipants().add(partner);
         
         // 채팅방 이름과 1:1 여부 설정
-        chatRoom.setRoomName(partner.getUsername());
+        if (roomName == null || roomName.isBlank()) {
+            chatRoom.setRoomName(partner.getUsername());
+        } else {
+            chatRoom.setRoomName(roomName);
+        }
         chatRoom.setGroup(false);
     
         return chatRoomRepository.save(chatRoom);

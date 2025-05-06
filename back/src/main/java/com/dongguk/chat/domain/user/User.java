@@ -3,6 +3,7 @@ package com.dongguk.chat.domain.user;
 
 import com.dongguk.chat.domain.profile.UserProfile;
 import com.dongguk.chat.domain.user.dto.UserCreateReq;
+import com.dongguk.chat.domain.user.dto.UserEditReq;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
@@ -37,6 +38,12 @@ public class User {
                 .password(encodedPassword)
                 .phoneNumber(userCreateReq.getPhoneNumber())
                 .build();
+    }
+
+    public void update(UserEditReq req){
+        this.username = req.getUsername();
+        this.email = req.getEmail();
+        this.phoneNumber = req.getPhoneNumber();
     }
 
     @Builder(access = AccessLevel.PRIVATE)
