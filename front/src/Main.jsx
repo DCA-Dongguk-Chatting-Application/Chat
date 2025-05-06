@@ -254,13 +254,13 @@ const handleInvite = (friend) => {
   };
     //각 팝업창 on/off관리
     const ToggleMyMenu = () => {//내 메뉴
-        setmymenuModalOpened(!ismymenuModalOpened);
+        // setmymenuModalOpened(!ismymenuModalOpened);
     };
     const ToggleAddRoom = () => {//방 추가시 안내창
         setRoomAddModalOpened(!isRoomAddModalOpened);
     };
     const ToggleExitRoom = () => {//나가기 버튼 클릭 후 팝업
-        setExitModalOpened(!isExitModalOpened);
+        setRoomId(null);
     };
     const ToggleFriendListSwitch = () => {//누르면 친구목록, 참여자목록 전환
         setfriendlistswitched(!friendlistswitched);
@@ -278,32 +278,53 @@ const handleInvite = (friend) => {
 
 //채팅방 생성기능 구현 (아직 1대1 채팅만 구현)
 const handleCreateRoom = async () => {
-    const invitedUserIds = inviteList.map(friend => friend.userId);
-    //초대한 인원들의 ID을 모두 inviteList에 담는다
-    if (invitedUserIds.length !== 1) {
-      alert('현재 1대1채팅만 구현되었습니다. 1명만 초대하세요');
+    const invitedUserIds = inviteList.map(friend => friend.userId);//초대한 인원들의 ID을 모두 inviteList에 담는다
+    const roomName = newRoomname; // 예: "chat_123_456"
+    if (invitedUserIds.length == 0) {//0명일 경우 생성 불가
+      alert('아무도 초대하지 않았습니다');
       return;
     }
-  
-    const roomName = newRoomname; // 예: "chat_123_456"
-  
-    try {
-      const response = await axios.post('/api/chatroom/create', {
-        roomName: roomName,
-        myId: userId,
-        partnerId: invitedUserIds[0]
+
+    else if (invitedUserIds.length == 1){ // 1대1기능
+        try {
+            const response = await axios.post('/api/chatroom/create', {
+            roomName: roomName,
+            myId: userId,
+            partnerId: invitedUserIds[0]
       });
   
       // 성공 시 처리
-      console.log('방 생성 성공:', response.data);
-      const roomRes = await axios.get(`/api/chatroom/list/${userId}`);
-      setRooms(roomRes.data);
+            console.log('1대1 채팅방 생성 성공:', response.data);
+            const roomRes = await axios.get(`/api/chatroom/list/${userId}`);//방 생성후 리스트 재 로딩딩
+            setRooms(roomRes.data);
 
-      setRoomAddModalOpened(!isRoomAddModalOpened);
-    } catch (error) {
-      console.error('방 생성 실패:', error);
-      alert('방 생성에 실패했습니다.');
+            setRoomAddModalOpened(!isRoomAddModalOpened);
+        } catch (error) {
+            console.error('방 생성 실패:', error);
+            alert('방 생성에 실패했습니다.');
+        }
     }
+
+    else if (invitedUserIds.length > 1){  // 1대n 기능
+        try {
+            invitedUserIds.push(userId);
+            const response = await axios.post('/api/chatroom/group', {
+            roomName: roomName,
+            userIds : invitedUserIds,
+      });
+  
+      // 성공 시 처리
+            console.log('1대n 채팅방 생성 성공:', response.data);
+            const roomRes = await axios.get(`/api/chatroom/list/${userId}`);
+            setRooms(roomRes.data);
+
+            setRoomAddModalOpened(!isRoomAddModalOpened);
+        } catch (error) {
+            console.error('방 생성 실패:', error);
+            alert('방 생성에 실패했습니다.');
+        }
+    }
+    
   };
  
   
@@ -390,7 +411,7 @@ const handleCreateRoom = async () => {
 
             </div>
             <div class = "left-banner-profile-container">
-                 <div class = "left-banner-my-profile" onClick = {ToggleMyMenu}>내프사</div>
+                 <div class = "left-banner-my-profile" onClick = {goSetting}>내프사</div>
             </div>
 
             {ismymenuModalOpened && (
@@ -443,7 +464,7 @@ const handleCreateRoom = async () => {
         <div class = "center-banner" ref = {chatContainerRef}>
             <div class = "center-banner-top">
                 <div class = "center-banner-top-text">{roomName}</div>
-                <div class = "center-banner-top-room-exit-button" onClick={ToggleExitRoom}>
+                <div class = "center-banner-top-room-exit-button" onClick={ToggleExitRoom}채>
                     <img
                         src={require(`./assets/door.png`)}
                         alt="close icon"

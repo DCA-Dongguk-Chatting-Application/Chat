@@ -7,7 +7,7 @@ function RoomList({ id, name, onClick }) {
     const [tooltipPosition, setTooltipPosition] = useState({ left: 0, top: 0 });
 
     const toggleModal = () => {
-        setShowModal(!showModal);
+        // setShowModal(!showModal);
         onClick(id, name);
     };
 
