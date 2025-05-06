@@ -93,17 +93,18 @@ useEffect(() => {fetchUserInfo();}, []);
 //프로필 업로드 확인 버튼 
 const handleProfileConfirm = async (e) => {
     if(!profileNick){
-        alert("입력하지 않은 정보가 있습니다!");
+        alert("이름은 필수입니다!");
         return;
     }
 
-    if(!profileImageRef.current){
-        alert("입력하지 않은 정보가 있습니다!");
-        return;
-    }
-
+   
     const formData = new FormData();
-    formData.append('image', profileImageRef.current);           // MultipartFile
+    
+    if(profileImageRef.current){
+        
+        formData.append('image', profileImageRef.current);
+    }
+    // MultipartFile
     formData.append('nickname', profileNick);     // 일반 문자열
     formData.append('userId', userId);  
     console.log('전송할 이미지:', profileImageRef.current);       // Long 타입, 문자열로 보내도 됨

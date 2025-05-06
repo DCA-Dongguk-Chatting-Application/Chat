@@ -929,7 +929,7 @@
     left : 50px;
     width : 180px;
     height : 180px;
-    background-color : white;
+    background-color : rgb(155, 155, 155);
     border-radius : 20px;
 }
 
@@ -1342,4 +1342,14 @@
     position: absolute;
     left :
     20px;
+}
+
+.setting-profile-picture-none{
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+    width : 130px;
+    height : 130px;
+
 }

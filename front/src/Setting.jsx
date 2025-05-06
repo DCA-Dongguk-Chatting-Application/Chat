@@ -148,9 +148,22 @@ export const Setting = () => {
       <div class = "background">
           <div class = "setting-profile-container">
               <div class = "setting-profile-picture" >
-              {loading ? (
-    <img  class = "setting-profile-picture-real" src= {`${serverUrl}${userProfile.imageUrl}`} alt="이미지를 설정하지 않음"/>
-        ) : ("Loading...")}
+              {loading==false ? (
+                "Loading..."
+              ) : userProfile.imageUrl ? (
+                <img
+                  className="setting-profile-picture-real"
+                  src={`${serverUrl}${userProfile.imageUrl}`}
+                  alt="User profile"
+                />
+              ) : (
+                <img
+                  className="setting-profile-picture-none"
+                  src={require('./assets/profile-user.png')}
+                  alt="기본 프로필 이미지"
+                />
+              )}
+
               </div>
               <h3 class = "setting-profile-info-text">프로필 정보</h3>
               <h1 class = "setting-nick">{loading ? userProfile.nickname : "Loading..."}</h1>
