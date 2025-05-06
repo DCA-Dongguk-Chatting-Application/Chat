@@ -69,10 +69,15 @@ useEffect(() => {
       const toggleModal = () => {
           setShowModal(!showModal);
       };
-//친구관리
+//친구수락
   const [showFriendModal, setShowFriendModal] = useState(false);
   const  toggleFriendModal = () => {
           setShowFriendModal(!showFriendModal);
+      };
+//친구걸기
+  const [showAddFriendModal, setAddShowFriendModal] = useState(false);
+  const  toggleAddFriendModal = () => {
+          setAddShowFriendModal(!showAddFriendModal);
       };
 //친추 받는창/거는창 전환
   const [showFriendModalSwitch, setShowFriendModalSwitch] = useState(false);
@@ -215,6 +220,14 @@ useEffect(() => {
                 className="edit-icon"
                />  
               </div>
+              
+              <div class = "setting-friend-add-button" onClick = {toggleAddFriendModal}>
+                <img
+                src={require(`./assets/add-friend.png`)}
+                alt="previous icon"
+                className="friend-add-icon"
+                /> 
+              </div>
 
               <div class = "setting-back-button" onClick = {goBack}>
                 <img
@@ -272,19 +285,9 @@ useEffect(() => {
                   className="close-icon"
                   />
               </div>
-              {showFriendModalSwitch? (
-                <div>
-                  <div class = "setting-mode-1-text">친구 신청하기</div>
-                  <div class = "setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청받기</div>
-                  <input class = "setting-mode-searchbox" placeholder = "userID 입력" onChange={(e) => setRequestId(e.target.value)}/>
-                  {/*<div class = "setting-mode-confirm">검색</div>*/}
-                  <div class = "setting-searched-name">아이디 입력후 확인을 누르세요</div>
-                  <div class = "setting-mode-confirm-ok" onClick = {sendRequest}>친구신청 보내기</div>
-                </div>
-                ) : (
-                <div>
+              <div>
                   <div class = "setting-mode-1-text">받은 친구신청</div>
-                  <div class = "setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청하기</div>
+                  {/* <div class = "setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청하기</div> */}
                   <div class = "setting-mode-requested-container">
                   {friendReqlist.map((req, index) => (
                     <RequestList
@@ -296,7 +299,28 @@ useEffect(() => {
                     />
                 ))}
                   </div>
-                </div>)}
+                </div>
+
+            </div>
+          </div>
+        )}
+
+        {showAddFriendModal && (
+          <div class = "modal-overlay">
+            <div class = "modal-setting-friend-container-2">
+              <div class = "modal-setting-friend-close" onClick={toggleAddFriendModal}>
+                <img
+                  src={require(`./assets/close.png`)}
+                  alt="close icon"
+                  className="close-icon"
+                  />
+              </div>
+              <div>
+                  <div class = "setting-mode-1-text">친구 신청하기</div>
+                  <input class = "setting-mode-searchbox" placeholder = "userID 입력" onChange={(e) => setRequestId(e.target.value)}/>
+                  <div class = "setting-searched-name">아이디 입력후 확인을 누르세요</div>
+                  <div class = "setting-mode-confirm-ok" onClick = {sendRequest}>친구신청 보내기</div>
+                </div>
 
             </div>
           </div>

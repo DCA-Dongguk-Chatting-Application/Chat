@@ -224,20 +224,20 @@
 .chat-textbox{
     position : absolute;
     width : 50%;
-    height : 30px;
+    height : 28px;
     top : 50%;
     left : 15%;
     padding : 5px;
     border-radius : 5px;
     transform: translate(0%, -50%);
     background-color : #D9D9D9;
-    border: 1px solid #D9D9D9;
+    border: 2px solid #D9D9D9;
     font-size : 20px;
 }
 
 .chat-textbox:focus{
     outline: none;
-    border: 3px solid #4d4d4d;
+    border: 2px solid #4d4d4d;
 }
 
 .chat-time{
@@ -267,8 +267,10 @@
     padding : 5px;
     transform: translate(0%, -50%);
     background-color : #9F9D9D;
+    border: 2px solid #9F9D9D;
     font-size : 20px;
-    
+    font-weight: 800;
+    color :#353535;
 }
 
 .message-send-button:hover{
@@ -284,6 +286,7 @@
     top : 50%;
     left : 73%;
     padding : 5px;
+    border: 2px solid white;
     transform: translate(0%, -50%);
 }
 
@@ -338,6 +341,18 @@
     position : absolute;
     top : 20px;
     right : 300px;
+    background-color: none;
+    width : 50px;
+    height : 50px;
+    border-radius : 5px;
+    justify-content: center;
+    align-items: center;
+    border : 2px green;
+}
+
+.center-banner-top-room-exit-button:hover{
+    
+    border : 2px black;
 }
 
 .info-zone-opponent{
@@ -700,6 +715,14 @@
     bottom : 10px;
 }
 
+.main-left-my-name{
+    color : white;
+    position : absolute;
+    bottom : 18px;
+    left : 50%;
+    transform: translate(-50%, 0%);
+}
+
 .left-banner-room-icon{
     width : 50px;
     height : 50px;
@@ -752,6 +775,7 @@
     margin : 15px;
     border-radius : 10px;
     background-color : rgba(51, 51, 51, 0.637);
+    border : 2px solid rgba(51, 51, 51, 0.637);
 }
 
 .left-banner-my-profile:hover{
@@ -1008,10 +1032,13 @@
 }
 
 .setting-profile-picture-real{
+    position : absolute;
     
-    
-    width : 180px;
-    height : 180px;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+    width : 170px;
+    height : 170px;
     
     border-radius : 20px;
 }
@@ -1020,12 +1047,14 @@
     position : absolute;
     top : 9%;
     left : 250px;
+    color :#9F9D9D;
 }
 
 .setting-nick{
     position : absolute;
     top : 16%;
     left : 250px;
+    color :#d4d4d4;
 }
 
 .setting-info-container{
@@ -1130,10 +1159,26 @@
 
 }
 
+.setting-friend-add-button{
+    width : 50px;
+    height : 50px;
+    font-size : 20px;
+    position : absolute;
+    top : 10px;
+    right : 140px;
+    align-items : center;
+    justify-content: center;
+    background-color : #505050;
+}
+
 .edit-icon{
     width : 40px;
     height : 40px;
     pointer-events : none;
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
     
 }
 
@@ -1141,13 +1186,35 @@
     width : 40px;
     height : 40px;
     pointer-events : none;
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+    
 }
 
 .friend-icon{
     width : 40px;
     height : 40px;
     pointer-events : none;
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
 }
+
+
+.friend-add-icon{
+    width : 35px;
+    height : 35px;
+    pointer-events : none;
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+}
+
+
 
 .setting-modal-container{
     background :rgb(105, 104, 104);
@@ -1172,6 +1239,7 @@
     top : 25%;
     left : 10%;
     transform: translate(0%, -50%);
+    color : #d4d4d4
 }
 
 .setting-modal-text-2{
@@ -1180,6 +1248,7 @@
     top : 37%;
     left : 10%;
     transform: translate(0%, -50%);
+    color : #d4d4d4
 }
 
 .setting-modal-text-3{
@@ -1188,6 +1257,7 @@
     top : 49%;
     left : 10%;
     transform: translate(0%, -50%);
+    color : #d4d4d4
 }
 
 .setting-modal-text-4{
@@ -1204,21 +1274,30 @@
     top : 10%;
     left : 50%;
     transform: translate(-50%, -50%);
+    color : white;
+    font-weight : 500;
 }
 
 .setting-modal-ok{
     position : absolute;
     width : 80px;
-    height : 30px;
+    height : 26px;
     border-radius : 5px;
-    border : none;
+    border : 2px solid #9F9D9D;
     top : 90%;
     left : 50%;
     padding : 5px;
     transform: translate(-50%, -50%);
     background-color : #9F9D9D;
     font-size : 20px;
+    color : #353535;
+    font-weight: 1000;
     text-align: center;
+    
+}
+
+.setting-modal-ok:hover{
+    border : 2px solid #4C4C4C;
 }
 
 
@@ -1275,8 +1354,17 @@
 
 .modal-setting-friend-container{
     background :rgb(105, 104, 104);
-    width : 700px;
-    height : 500px;
+    width : 500px;
+    height : 400px;
+    border-radius : 10px;
+    display : flex;
+    position : relative;
+}
+
+.modal-setting-friend-container-2{
+    background :rgb(105, 104, 104);
+    width : 500px;
+    height : 300px;
     border-radius : 10px;
     display : flex;
     position : relative;
@@ -1296,6 +1384,8 @@
     left : 50%;
     font-size : 20px;
     transform : translate(-50%, 0%);
+    color : white;
+    font-weight : 500;
 }
 
 .setting-mode-switch-button{
@@ -1318,8 +1408,8 @@
 
 .setting-mode-searchbox{
     position : absolute;
-    top : 40%;
-    left : 40%;
+    top : 35%;
+    left : 50%;
     font-size : 15px;
     transform : translate(-50%, 0%);
     padding : 5px;
@@ -1329,7 +1419,7 @@
     text-align: center;
 }
 
-.setting-mode-confirm{
+.setting-mode-confirm-ok{
     position : absolute;
     top : 40%;
     left : 70%;
@@ -1338,9 +1428,14 @@
     padding : 5px;
     border-radius: 5px;
     width : 60px;
-    height: 20px;
+    height: 16px;
     background-color: white;
     text-align: center;
+    border : 2px solid white;
+}
+
+.setting-mode-confirm-ok:hover{
+    border : 2px solid rgb(56, 56, 56);
 }
 
 .setting-searched-name{
@@ -1372,14 +1467,15 @@
     transform: translate(-50%, 0%);
     width : 300px;
     height : 260px;
-    border : 2px solid black;
+    border : 2px solid rgb(5, 5, 5);
+    background-color: #cccccc;
     border-radius : 5px;
     overflow-y: auto;
 }
 
 .requestlist-container{
     width  : 95%;
-    height : 25px;
+    height : 35px;
     background-color : rgb(131, 126, 126);
     margin : 5px;
     border-radius : 5px;
@@ -1414,8 +1510,8 @@
 
 .request-name{
     position: absolute;
-    left :
-    20px;
+    left :20px;
+    font-weight : 500;
 }
 
 .setting-profile-picture-none{
@@ -1425,5 +1521,5 @@
     transform: translate(-50%, -50%);
     width : 130px;
     height : 130px;
-
+    display: flex;
 }

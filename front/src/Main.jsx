@@ -462,6 +462,9 @@ const handleCreateRoom = async () => {
                     </div>
                 </div>
             )}
+
+            {loading? (<div class = "main-left-my-name">{userProfile.nickname}</div>) : ("Loading")}
+            
          
         </div>
 
