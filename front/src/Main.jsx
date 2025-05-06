@@ -504,14 +504,23 @@ const handleCreateRoom = async () => {
                 </div>
             </div>
             
-            {chatlog.map((chat, index) => (
-                <ChatBubble
-                    key = {index}
-                    sender = {chat.sender}
-                    message = {chat.content}
-                    isMe = {chat.isMe}
-                />
-            ))}
+            {chatlog.map((chat, index) => {
+                const currentDate = new Date(chat.sentAt).toDateString();
+                const prevDate =
+                    index > 0 ? new Date(chatlog[index - 1].sentAt).toDateString() : null;
+
+                const showDate = index === 0 || currentDate !== prevDate;
+
+                return (
+                    <ChatBubble
+                        key={index}
+                        sender={chat.sender}
+                        message={chat.content}
+                        time={chat.sentAt}
+                        showDate={showDate}
+                    />
+                );
+            })}
         </div>
        ) : (
         <div class = "center-banner">

@@ -240,6 +240,21 @@
     border: 3px solid #4d4d4d;
 }
 
+.chat-time{
+    color : rgb(211, 211, 211);
+    position : absolute;
+    left : 50%;
+    transform: translate(-50%, -50%);
+    height : 30px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    width : 170px;
+    height : 25px;
+    background-color: #4C4C4C;
+    border-radius : 5px;
+}
+
 
 .message-send-button{
     position : absolute;
@@ -373,6 +388,8 @@
 .chat-section-me{
     border: 2px solid none;
 }
+
+
 
 .profile-picture-opponent{
     
