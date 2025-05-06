@@ -31,6 +31,7 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
 
+
     public Message saveMessage(MessageSendDto dto) {
         ChatRoom chatRoom = chatRoomRepository.findById(dto.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("채팅방 없음"));
@@ -59,6 +60,13 @@ public class ChatService {
                 .build())
             .collect(Collectors.toList());
     }
+
+    public  List<MessageSendDto> findMessageByJpa(Long roomId, String keyword){
+        return MessageSendDto.from(messageRepository.findAllByKeyword(roomId, keyword));
+    }
+
+
+
 
     public ChatRoom create1to1Room(Long myId, Long partnerId, String roomName) {
         User me = userRepository.findById(myId)
