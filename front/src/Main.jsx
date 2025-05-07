@@ -378,7 +378,7 @@ const handleCreateRoom = async () => {
                     />
                     <input class = "profile-modal-name-textbox" placeholder="닉네임 입력" onChange={(e) => setProFileNick(e.target.value)}/>
                     <div class = "profile-modal-confirm-button" onClick = {handleProfileConfirm}>확인</div>
-                    <div class = "profile-modal-close" onClick={profileClose}>닫기</div>
+                    {/* <div class = "profile-modal-close" onClick={profileClose}>닫기</div> */}
                 </div>
             </div>
         )}

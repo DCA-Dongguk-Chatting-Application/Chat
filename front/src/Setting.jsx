@@ -90,6 +90,10 @@ useEffect(() => {
     navigate("/main"); 
   };
 
+  const logout = () => {
+    navigate("/"); 
+  };
+
   const sendRequest = async () => {///친구 신청 버튼 누르면 작동
     const token = localStorage.getItem("accessToken");
   
@@ -174,7 +178,9 @@ useEffect(() => {
 
       
       <div class = "background">
+        
           <div class = "setting-profile-container">
+              <div class = "logout" onClick={logout}>Logout</div>
               <div class = "setting-profile-picture" >
               {loading==false ? (
                 "Loading..."

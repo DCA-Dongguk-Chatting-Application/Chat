@@ -103,6 +103,7 @@ export const Login = () => {
                     placeholder = "아이디"
                     onChange={(e) => setIdLogin(e.target.value)}></input>
                 <input class = "login-pw-textbox" 
+                type = "password"
                     placeholder = "PW"
                     onChange={(e) => setPwLogin(e.target.value)}></input>
                 <button class = "login-confirm" onClick={handleLogin}>확인</button>
