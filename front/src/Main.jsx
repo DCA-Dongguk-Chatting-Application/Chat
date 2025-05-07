@@ -36,10 +36,15 @@ export const Main = () => {
     const [friendlist, setFriendList] = useState([]);//친구 목록 (1초마다 자동 갱신됨)
     const [displayFriendList, setDisplayFriendList] = useState([]);//친구 초대시에만 임시로 쓰는 부분. 갱신 버그를 방지하기 위해 친구 목록을 복사해 저장
     const [roomates, setRoomatesList] = useState([]);//참여자목록
+    const [avatarList, setAvatarList] = useState([]);//참여자목록서 userId + imageUrl만 (채팅창 프사 표시용)
     const [roomName, setRoomName] = useState("방을 선택하세요")//방 제목
     const [profileNick, setProFileNick] = useState("");//프로필 생성- 닉네임
     const [userProfile, setUserProfile] = useState(null);//최초 접속 시, 프로필이 있는지 검사용
-    const [loading, setLoadingComplete] = useState(false);//프로필로딩 여부 검ㅅㅏ
+    const [loading, setLoadingComplete] = useState(false);//내 프로필로딩 여부 검ㅅㅏ
+    const [loading_friend, setLoadingComplete_friend] = useState(false)//친구정보 로딩 여부 검사
+    const [loading_mate, setLoadingComplete_mate] = useState(false)//참여자정보 로딩 여부 검사
+    const [loading_chat, setLoadingComplete_chat] = useState(false)//채팅 로딩 여부 검사
+    const [loading_complete, setLoadingComplete_complete] = useState(false)//채팅, 참여자 모두 로딩 되었는지 여부 검사
    //프로필 생성- 프사
     const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -167,6 +172,7 @@ useEffect(() => {
         axios.get(`/api/friends/${userInfo.id}`)
             .then((res) => {
                 setFriendList(res.data);
+                setLoadingComplete_friend(true);
                 console.log("친구목록 갱신");
             })
             .catch((err) => console.error("친구 목록 갱신 실패", err));
@@ -197,12 +203,23 @@ useEffect(() => {
 // ✅ 3. roomId가 선택된 후 참여자 목록과 채팅 기록 가져오기
 useEffect(() => {
     if (!roomId) return;
-
+            setLoadingComplete_mate(false);
+            setLoadingComplete_chat(false);
+            setLoadingComplete_complete(false);
     // 참여자 목록
     axios.get(`/api/chatroom/${roomId}/participants`)
         .then((res) => {
             setRoomatesList(res.data);
             console.log("참여자목록 부름");
+            // imageUrl + userId만 추출한 리스트 저장
+            const avatars = res.data.map((entry) => ({
+                userId: entry.profile.userId,
+                imageUrl: entry.profile.imageUrl,
+                nickname : entry.profile.nickname
+            }));
+            setAvatarList(avatars);
+            console.log("AvatarList:", avatarList);
+            setLoadingComplete_mate(true);
         })
         .catch((err) => console.error("참여자목록 불러오기 실패", err));
 
@@ -210,11 +227,18 @@ useEffect(() => {
     axios.get(`/api/chatroom/${roomId}/messages`)
         .then((res) => {
             setChatLog(res.data);
+            setLoadingComplete_chat(true);
         })
         .catch((err) => console.error("채팅 기록 불러오기 실패", err));
 
 }, [roomId]);
 
+// 참여자, 채팅 로딩 모두 완료되면 최종 로딩 완료 처리
+useEffect(() => {
+    if (loading_mate && loading_chat) {
+        setLoadingComplete_complete(true);
+    }
+}, [loading_mate, loading_chat]);
 
 
 //메시지 전송 버튼 동작
@@ -521,6 +545,8 @@ const handleCreateRoom = async () => {
                         message={chat.content}
                         time={chat.sentAt}
                         showDate={showDate}
+                        avatarList = {avatarList}
+                        loading = {loading_complete}
                     />
                 );
             })}
@@ -554,10 +580,10 @@ const handleCreateRoom = async () => {
             <div className="right-banner-friend-list-zone">
              {friendlistswitched
                 ? friendlist.map((friend, index) => (
-                    <FriendList key={index} id={friend.userId} name={friend.nickname} isOnline = {friend.online}  />
+                    <FriendList key={index} id={friend.userId} name={friend.nickname} isOnline = {friend.online} image = {friend.imageUrl} loading = {loading_friend} />
                 ))
                 : roomates.map((mate, index) => (
-                    <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} />
+                    <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} image = {mate.profile.imageUrl} loading = {loading_mate}/>
                 ))}
             </div>
             

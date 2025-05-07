@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 
 
-function FriendList({id, name, isOnline}) {
+function FriendList({id, name, isOnline, image, loading}) {
     const [showModal, setShowModal] = useState(false);
+    const serverUrl = 'http://59.24.237.51:8080';
     const toggleModal = () => {
         setShowModal(!showModal);
     };
@@ -11,7 +12,27 @@ function FriendList({id, name, isOnline}) {
     return (
     <>
     <div class = "friend-single-section" onClick={toggleModal}>
-        <div class = "right-banner-friend-profile-picture"></div>
+        <div class = "right-banner-friend-profile-picture">
+        {loading==false ? (
+                            <img
+                            className="profile-icon-friend"
+                            src={require('./assets/profile-user.png')}
+                            alt="기본 프로필 이미지"
+                            />
+                        ) : image? (
+                            <img
+                            className="profile-icon-friend-real"
+                            src={`${serverUrl}${image}`}
+                            alt="User profile"
+                            />
+                        ) : (
+                            <img
+                            className="profile-icon-friend"
+                            src={require('./assets/profile-user.png')}
+                            alt="기본 프로필 이미지"
+                            />
+                    )}
+        </div>
         <div class = "right-banner-freind-name-container">{id}-{name}</div>
         <div 
             className="right-banner-online-indicator" 

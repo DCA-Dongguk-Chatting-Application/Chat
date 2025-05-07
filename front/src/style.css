@@ -407,7 +407,9 @@
 
 
 .profile-picture-opponent{
-    
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width : 50px;
     height : 50px;
     background-color : white;
@@ -624,6 +626,30 @@
 
 }
 
+.profile-icon-friend-real{
+    width : 33px;
+    height : 33px;
+    border-radius: 5px;;
+}
+
+.profile-icon-friend-chat{
+    width : 44px;
+    height : 44px;
+    border-radius: 5px;;
+}
+
+.profile-icon-friend-real-chat{
+    width : 46px;
+    height : 46px;
+    border-radius: 5px;;
+}
+
+.profile-icon-friend{
+    width : 33px;
+    height : 33px;
+    border-radius: 5px;;
+}
+
 .main-menu-my-profile-modal-close{
     position : absolute;
     top : 10px;
@@ -679,6 +705,9 @@
     background-color : white;
     border-radius : 5px;
     margin : 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .friend-single-section{
