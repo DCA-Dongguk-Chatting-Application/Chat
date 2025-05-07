@@ -18,6 +18,16 @@ export const Login = () => {
     
 
     const handleRegister = async () => {//회원가입
+        if (
+            !idRegister.trim() ||
+            !pwRegister.trim() ||
+            !nameRegister.trim() ||
+            !phoneRegister.trim()
+        ) {
+            alert("모든 항목을 입력해주세요.");
+            return;
+        }
+    
         try {
             const response = await axios.post("/api/user", {
             

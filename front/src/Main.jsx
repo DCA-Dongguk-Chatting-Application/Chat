@@ -244,7 +244,10 @@ useEffect(() => {
 //메시지 전송 버튼 동작
 function sendMessage() {
     
-    
+    if (!textbox || textbox.trim() === "") {
+        return;
+    }
+
     if (!client || !client.connected) {
         alert("STOMP에 연결되지 않았습니다. '채팅 연결' 버튼을 눌러주세요.");
         return;

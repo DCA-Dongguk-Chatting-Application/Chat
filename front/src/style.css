@@ -242,7 +242,7 @@
 
 .chat-time{
     color : rgb(211, 211, 211);
-    position : absolute;
+    position : relative;
     left : 50%;
     transform: translate(-50%, -50%);
     height : 30px;
