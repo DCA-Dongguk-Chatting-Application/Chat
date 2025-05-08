@@ -47,7 +47,8 @@ export const Main = () => {
     const [loading_chat, setLoadingComplete_chat] = useState(false)//채팅 로딩 여부 검사
     const [loading_complete, setLoadingComplete_complete] = useState(false)//채팅, 참여자 모두 로딩 되었는지 여부 검사
     const [filteredFriendList, setFilteredFriendList] = useState([]); // 초대 가능한 친구 목록(친구목록에서 참가자 빼기)
-   //프로필 생성- 프사
+    const [selectedUserIds, setSelectedUserIds] = useState([]);//chat-upgrade 시 선택된 자들
+    //프로필 생성- 프사
     const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
     const serverUrl = 'http://59.24.237.51:8080';
@@ -313,6 +314,7 @@ const handleInvite = (friend) => {
     const closeUpgradeModal = () =>{
         setUpradeOpened(false);
         fetchRoomList();
+        setSelectedUserIds([]);
         setLoadingComplete_mate(false);
         setLoadingComplete_chat(false);
     }
@@ -379,6 +381,35 @@ const handleCreateRoom = async () => {
     }
     
   };
+
+  const toggleSelect = (userId) => {
+    setSelectedUserIds((prev) => {
+        const updated = prev.includes(userId)
+            ? prev.filter(id => id !== userId)
+            : [...prev, userId];
+        console.log("현재 선택된 유저 ID 목록:", updated);
+        return updated;
+    });
+};
+
+const handleUpgrade = () => {
+    const existingIds = roomates.map((r) => r.user.id);
+    const newUserIds = [...new Set([...existingIds, ...selectedUserIds])];
+
+    axios.post(`/api/chatroom/upgrade`, {
+        originalRoomId: roomId,
+        newUserIds: newUserIds,
+        roomName: roomName
+    })
+        .then(() => {
+            alert("초대 성공!");
+            closeUpgradeModal();
+        })
+        .catch((error) => {
+            console.error("초대 실패", error);
+            alert("초대에 실패했습니다.");
+        });
+};
  
 
 
@@ -603,13 +634,15 @@ const handleCreateRoom = async () => {
                 : roomates.map((mate, index) => (
                     <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} image = {mate.profile.imageUrl} loading = {loading_mate}/>
                 ))}
-                {!friendlistswitched && <div class = "chatroom-upgrade-button" onClick={ToggleUpgrade}>
-                    <img
-                        className="upgrade-add-icon"
-                        src={require('./assets/add-white.png')}
-                        alt="기본 프로필 이미지"
-                    />
-                    </div>}
+                {!friendlistswitched && roomates.length === 2 && (
+                    <div className="chatroom-upgrade-button" onClick={ToggleUpgrade}>
+                        <img
+                            className="upgrade-add-icon"
+                            src={require('./assets/add-white.png')}
+                            alt="기본 프로필 이미지"
+                        />
+                    </div>
+                )}
             </div>
             
         </div>
@@ -625,15 +658,17 @@ const handleCreateRoom = async () => {
                                     key = {index}
                                     id = {user.userId}
                                     name = {user.nickname}
-                                    myId={userId}
-                                    roomId = {roomId}
-                                    roomName = {roomName}
-                                    existingParticipants={roomates.map((participant) => participant.user.id)}
-                                    onInviteSuccess={closeUpgradeModal}
+                                    isSelected={selectedUserIds.includes(user.userId)}
+                                    toggleSelect={toggleSelect}
                                     />
                             ))}
                         </div>
-                        <div class = "exit-madal-cancel" onClick={ToggleUpgrade}>닫기</div>
+                        <div class = "exit-madal-cancel" onClick={ToggleUpgrade}>Cancel</div>
+                        <div class = "exit-madal-confirm"
+                            onClick={handleUpgrade}
+                            disabled={selectedUserIds.length === 0}>
+                                OK
+                        </div>
                     </div>
                 </div>
         )}

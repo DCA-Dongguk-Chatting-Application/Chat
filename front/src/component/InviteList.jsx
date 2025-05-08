@@ -1,33 +1,19 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
-function InviteList({id, name, myId, roomId, roomName, existingParticipants, onInviteSuccess}) {
-    const [isInvited, setIsInvited] = useState(false);
-    const handleInvite = () => {
-        const newUserIds = [...existingParticipants, id];
-
-        axios.post(`/api/chatroom/upgrade`, {
-            originalRoomId: roomId,
-            newUserIds: newUserIds,
-            roomName: roomName
-        })
-            .then((response) => {
-                setIsInvited(true);
-                alert("초대 성공!");
-
-                
-                onInviteSuccess();
-            })
-            .catch((error) => {
-                console.error("초대 실패", error);
-                alert("초대에 실패했습니다.");
-            });
-    };
+function InviteList({id, name, isSelected, toggleSelect}) {
+    
+    
 
     return (
        <>
             <div class = "requestlist-container">
                 <div class = "request-name">#{id}/{name}</div>
-                <div class = "request-o" onClick={handleInvite}>초대</div>
+                <div
+                className={`request-o ${isSelected ? "selected" : ""}`}
+                onClick={() => toggleSelect(id)}
+            >
+                {isSelected ? "선택됨" : "선택"}
+            </div>
             </div>
       </>
     );
