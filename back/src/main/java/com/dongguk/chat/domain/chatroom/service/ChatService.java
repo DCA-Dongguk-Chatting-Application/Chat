@@ -1,6 +1,7 @@
 package com.dongguk.chat.domain.chatroom.service;
 
 
+import com.dongguk.chat.domain.chatroom.dto.ChatRoomAddparticipantsDto;
 import com.dongguk.chat.domain.chatroom.dto.ChatRoomCreateDto;
 import com.dongguk.chat.domain.chatroom.dto.ChatRoomGroupCreateDto;
 import com.dongguk.chat.domain.chatroom.dto.ChatRoomUpgradeDto;
@@ -126,6 +127,25 @@ public class ChatService {
         newGroupRoom.setParticipants(participants);
 
         return chatRoomRepository.save(newGroupRoom);
+    }
+
+    // 1대N 채팅방 인원 추가
+    public ChatRoom addParticipantToRoom(Long roomId, ChatRoomAddparticipantsDto dto) {
+        ChatRoom chatroom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("기존 채팅방 없음"));
+
+        Set<User> participants = chatroom.getParticipants();
+
+        // 중복되지 않은 새로운 유저만 필터링
+        List<User> usersToAdd = dto.getUserIds().stream()
+                .map(userId -> userRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("유저 ID " + userId + "를 찾을 수 없습니다.")))
+                .filter(user -> !participants.contains(user))
+                .toList();
+        
+        participants.addAll(usersToAdd);
+        chatroom.setParticipants(participants);
+
+        return chatRoomRepository.save(chatroom);
     }
 
 

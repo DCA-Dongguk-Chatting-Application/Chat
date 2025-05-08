@@ -75,4 +75,10 @@ public class ChatRoomController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/chatroom/{roomId}/add-participants")
+    public ResponseEntity<ChatRoomResponseDto> addParticipants(@PathVariable Long roomId, @RequestBody ChatRoomAddparticipantsDto dto){
+        ChatRoom updatedRoom = chatService.addParticipantToRoom(roomId, dto);
+        return ResponseEntity.ok(ChatRoomResponseDto.from(updatedRoom));
+    }
 }
