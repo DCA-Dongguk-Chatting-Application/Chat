@@ -54,14 +54,14 @@ export const Main = () => {
     const [userInfo, setUserInfo] = useState(null);
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("accessToken");
-   
+
 
     const profileClose = () => {
         setProfileModalOpened(false);
     }
 //파일 업로드  (채팅버튼)
     const handleFileUpload = (e) => {
-       
+    
         const file = e.target.files[0];
         if (file) {
             alert(`선택된 파일: ${file.name}`);
@@ -75,10 +75,10 @@ const handleImageChange = (e) => {
     if(profileImageRef.current){
         alert(`선택한 파일 : ${profileImageRef.current.name}`)
     }
- 
+
 };
 //프로필을 불러와서, 이미 있다면 팝업창 false
-  const fetchUserInfo = async () => {
+const fetchUserInfo = async () => {
     try {
         const user_profile = await GetUserProfile(token);
         setUserProfile(user_profile);
@@ -86,9 +86,9 @@ const handleImageChange = (e) => {
         setLoadingComplete(true);//로딩 검사
         if (user_profile.nickname) {
             setProfileModalOpened(false);
-          } else {
+        } else {
             setProfileModalOpened(true);
-          }
+        }
     } catch (err) {
         alert("확인된 프로필 정보가 없습니다. 프로필을 생성해 주세요");
     }
@@ -102,7 +102,7 @@ const handleProfileConfirm = async (e) => {
         return;
     }
 
-   
+
     const formData = new FormData();
     
     if(profileImageRef.current){
@@ -115,24 +115,24 @@ const handleProfileConfirm = async (e) => {
     console.log('전송할 이미지:', profileImageRef.current);       // Long 타입, 문자열로 보내도 됨
 
     try {
-      const response = await axios.post('/api/profile', formData, {
+    const response = await axios.post('/api/profile', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          
+        'Content-Type': 'multipart/form-data',
+        
         },
         
         
-      }
+    }
     );
-      console.log('프로필 생성 성공:', response.data);
-      setProfileModalOpened(false);
-      alert("프로필을 생성했습니다!");
-      navigate(0);
+    console.log('프로필 생성 성공:', response.data);
+    setProfileModalOpened(false);
+    alert("프로필을 생성했습니다!");
+    navigate(0);
     } catch (error) {
-      console.error('프로필 생성 실패:', error);
+    console.error('프로필 생성 실패:', error);
     }
     
-  };
+};
 
 // ✅ 1. 유저 정보 가져오기
 useEffect(() => {
@@ -271,19 +271,19 @@ function sendMessage() {
 //채팅 오면 자동으로 스크롤 아래로
 useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [chatlog]);
+}, [chatlog]);
 //방 생성시 친구초대
 const handleInvite = (friend) => {
     setDisplayFriendList(displayFriendList.filter(f => f.userId !== friend.userId));
     setInviteList([...inviteList, friend]);
-  };
+};
 
-  const handleRemoveInvite = (friend) => {
+const handleRemoveInvite = (friend) => {
     setInviteList(inviteList.filter(f => f.userId !== friend.userId));
     setDisplayFriendList([...displayFriendList, friend]);
-  };
+};
     //각 팝업창 on/off관리
     const ToggleMyMenu = () => {//내 메뉴
         // setmymenuModalOpened(!ismymenuModalOpened);
@@ -317,9 +317,9 @@ const handleInvite = (friend) => {
 
     
     const navigate = useNavigate();
-      const goSetting = () => {
+    const goSetting = () => {
         navigate("/setting"); 
-      };
+    };
 //방 클릭 시, 방의 아이디 이름 저장
     const handleRoomClick = (id, name) => {
         setRoomId(id);
@@ -332,8 +332,8 @@ const handleCreateRoom = async () => {
     const invitedUserIds = inviteList.map(friend => friend.userId);//초대한 인원들의 ID을 모두 inviteList에 담는다
     const roomName = newRoomname; // 예: "chat_123_456"
     if (invitedUserIds.length == 0) {//0명일 경우 생성 불가
-      alert('아무도 초대하지 않았습니다');
-      return;
+    alert('아무도 초대하지 않았습니다');
+    return;
     }
 
     else if (invitedUserIds.length == 1){ // 1대1기능
@@ -342,8 +342,8 @@ const handleCreateRoom = async () => {
             roomName: roomName,
             myId: userId,
             partnerId: invitedUserIds[0]
-      });
-  
+    });
+
       // 성공 시 처리
             console.log('1대1 채팅방 생성 성공:', response.data);
             const roomRes = await axios.get(`/api/chatroom/list/${userId}`);//방 생성후 리스트 재 로딩딩
@@ -362,8 +362,8 @@ const handleCreateRoom = async () => {
             const response = await axios.post('/api/chatroom/group', {
             roomName: roomName,
             userIds : invitedUserIds,
-      });
-  
+    });
+
       // 성공 시 처리
             console.log('1대n 채팅방 생성 성공:', response.data);
             const roomRes = await axios.get(`/api/chatroom/list/${userId}`);
@@ -376,9 +376,9 @@ const handleCreateRoom = async () => {
         }
     }
     
-  };
+};
 
-  const toggleSelect = (userId) => {
+const toggleSelect = (userId) => {
     setSelectedUserIds((prev) => {
         const updated = prev.includes(userId)
             ? prev.filter(id => id !== userId)
@@ -406,7 +406,7 @@ const handleUpgrade = () => {
             alert("초대에 실패했습니다.");
         });
 };
- 
+
 
 
 //**본 메인 화면**//
@@ -420,8 +420,8 @@ const handleUpgrade = () => {
                     <div class = "profile-modal-sub-intro">진행하시려면 정보를 입력해주세요</div>
                     <div class = "profile-modal-name-guide" >닉네임</div>
                     <div className="profile-modal-image-guide">프로필 이미지</div>
-                    <input 
-                         type="file" 
+                    <input
+                        type="file" 
                         accept="image/*" 
                         className="profile-modal-image-upload"
                         onChange={handleImageChange}
@@ -497,7 +497,7 @@ const handleUpgrade = () => {
 
             </div>
             <div class = "left-banner-profile-container">
-                 <div class = "left-banner-my-profile" onClick = {goSetting}>
+                <div class = "left-banner-my-profile" onClick = {goSetting}>
                 
 
                     {loading==false ? (
@@ -519,7 +519,7 @@ const handleUpgrade = () => {
                             alt="기본 프로필 이미지"
                             />
                     )}
-                 </div>
+                </div>
             </div>
 
             {ismymenuModalOpened && (
@@ -532,8 +532,8 @@ const handleUpgrade = () => {
                             src={require(`./assets/close.png`)}
                             alt="close icon"
                             className="close-icon"
-                         /> 
-                         
+                        />
+                        
                         </div>
                         <div class = "main-menu-my-profile-modal-profile-button" onClick = {goSetting}>프로필로</div>
                     </div>
@@ -542,7 +542,7 @@ const handleUpgrade = () => {
 
             {loading? (<div class = "main-left-my-name">{userProfile.nickname}</div>) : ("Loading")}
             
-         
+        
         </div>
 
         <div class = "bottom-banner">
@@ -553,9 +553,9 @@ const handleUpgrade = () => {
                 onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault(); // enter키로 전송
-                      sendMessage();
+                    sendMessage();
                     }
-                  }}></input>
+                }}></input>
             <button class = "message-send-button" onClick={sendMessage}>전송</button>
             
             <button className="file-button" onClick={() => fileInputRef.current.click()}>
@@ -569,9 +569,9 @@ const handleUpgrade = () => {
                 onChange={handleFileUpload}
             />
             
-               
+            
         </div>
-       {roomId ? (
+        {roomId ? (
         <div class = "center-banner" ref = {chatContainerRef}>
             <div class = "center-banner-top">
                 <div class = "center-banner-top-text">{roomName}</div>
@@ -604,26 +604,26 @@ const handleUpgrade = () => {
                 );
             })}
         </div>
-       ) : (
+    ) : (
         <div class = "center-banner">
             <div class = "center-banner-guide-1">현재 선택한 채팅방이 없습니다</div>
             <div class = "center-banner-guide-2">좌측에서 방을 만들거나 선택하세요</div>
         </div>
 
-       )}
+    )}
         
-     
+    
 
     
 
         <div class = "right-banner">
             <div class = "title-friend-list-container">
                 <h3 class = "title-friend-list">{friendlistswitched? ("친구목록"):("참가자")}</h3>
-               
+
             </div>
             
             <div className="right-banner-friend-list-zone">
-             {friendlistswitched
+            {friendlistswitched
                 ? friendlist.map((friend, index) => (
                     <FriendList key={index} id={friend.userId} name={friend.nickname} isOnline = {friend.online} image = {friend.imageUrl} loading = {loading_friend} />
                 ))
