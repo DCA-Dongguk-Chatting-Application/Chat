@@ -340,6 +340,7 @@
     top : 40%;
     left : 50%;
     transform: translate(-50%, -50%);
+    white-space: nowrap;
 }
 
 .center-banner-guide-2{
@@ -349,6 +350,7 @@
     top : 65%;
     left : 50%;
     transform: translate(-50%, -50%);
+    white-space: nowrap;
 }
 
 .center-banner-top{
@@ -409,6 +411,7 @@
 
 .name-opponent{
     color : white;
+    white-space: nowrap;
 }
 
 .chat-bubble-zone-me{
@@ -600,6 +603,27 @@
     height : 40px;
 }
 
+.chatroom-upgrade-button{
+    border : 2px solid #4c4c4c;
+    text-align : center;
+    color : white;
+    font-weight: 400;
+    height : 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.upgrade-add-icon{
+    width : 30px;
+    height: 30px;
+}
+
+.chatroom-upgrade-button:hover{
+    border : 2px solid rgb(255, 255, 255);
+}
+
 .room-list-modal-container{
     background :rgb(105, 104, 104);
     width : 400px;
@@ -688,17 +712,69 @@
 .exit-modal-container{
     background :rgb(105, 104, 104);
     width : 400px;
-    height : 200px;
+    height : 300px;
     border-radius : 10px;
     display : flex;
     position : relative;
 }
 
-.exit-modal-container-text{
-    position : absolute;
-    top : 30%;
+.chat-room-upgrade-panel{
+    position: absolute;
+    top : 20%;
     left : 50%;
     transform: translate(-50%, 0%);
+    width : 260px;
+    height: 180px;
+    background-color: #9F9D9D;
+    border : 2px solid #353535;
+    border-radius : 5px;
+}
+
+.exit-modal-container-text{
+    position : absolute;
+    top : 10%;
+    left : 50%;
+    transform: translate(-50%, 0%);
+    white-space: nowrap;
+    color : white;
+    font-weight: 400;
+}
+
+.exit-madal-confirm{
+    position : absolute;
+    width : 70px;
+    height : 24px;
+    background-color: #9F9D9D;
+    text-align: center;
+    border-radius: 5px;
+    border : 2px solid #9f9d9d;
+    top : 90%;
+    left : 33%;
+    transform: translate(-50%, -50%);
+    font-weight: 500;
+}
+
+.exit-madal-cancel{
+    position : absolute;
+    width : 70px;
+    height : 24px;
+    background-color: #9F9D9D;
+    text-align: center;
+    border-radius: 5px;
+    border : 2px solid #9f9d9d;
+    top : 90%;
+    right : 13%;
+    transform: translate(-50%, -50%);
+    font-weight: 500;
+}
+
+
+.exit-madal-confirm:hover{
+    border : 2px solid #535353;
+}
+
+.exit-madal-cancel:hover{
+    border : 2px solid #535353;
 }
 
 .exit-modal-button-1{
@@ -778,7 +854,7 @@
     bottom : 18px;
     left : 50%;
     transform: translate(-50%, 0%);
-     
+    white-space: nowrap;
 }
 
 .left-banner-room-icon{

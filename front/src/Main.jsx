@@ -11,6 +11,7 @@ import {chatlog} from "./Testdata/testdata_chat"; //대화목록
 import {friendlist} from "./Testdata/testdata_friendlist"; //친구목록
 import {roomates} from "./Testdata/testdata_roomates"; // 참여자 목록
 import {rooms} from "./Testdata/testdata_roomlist"; // 방 목록
+import InviteList from "./component/InviteList";
 import axios from 'axios'
 
 import { Client } from "@stomp/stompjs";
@@ -24,7 +25,7 @@ export const Main = () => {
     const [isHovered, setIsHovered] = useState(false)
     const [ismymenuModalOpened, setmymenuModalOpened] = useState(false)
     const [isRoomAddModalOpened, setRoomAddModalOpened] = useState(false)//방 추가버튼 누를시 모달창
-    const [isExitModalOpened, setExitModalOpened] = useState(false)//방 나가기 클릭시 모달
+    const [isUpgradeOpened, setUpradeOpened] = useState(false)//chatroom_upgrade 팝업
     const [isProfileModalOpened, setProfileModalOpened] = useState(true)//로그인 후, 프로필 정보 쓰는 모달이 나온다
     const [friendlistswitched, setfriendlistswitched] = useState(true)
     const [inviteList, setInviteList] = useState([]); //방 생성시초대목록
@@ -45,7 +46,9 @@ export const Main = () => {
     const [loading_mate, setLoadingComplete_mate] = useState(false)//참여자정보 로딩 여부 검사
     const [loading_chat, setLoadingComplete_chat] = useState(false)//채팅 로딩 여부 검사
     const [loading_complete, setLoadingComplete_complete] = useState(false)//채팅, 참여자 모두 로딩 되었는지 여부 검사
-   //프로필 생성- 프사
+    const [filteredFriendList, setFilteredFriendList] = useState([]); // 초대 가능한 친구 목록(친구목록에서 참가자 빼기)
+    const [selectedUserIds, setSelectedUserIds] = useState([]);//chat-upgrade 시 선택된 자들
+    //프로필 생성- 프사
     const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
     const serverUrl = 'http://59.24.237.51:8080';
@@ -151,18 +154,21 @@ useEffect(() => {
 }, []);
 
 // ✅ 2. 유저 정보를 기준으로 방 목록, 친구 목록
-useEffect(() => {
+const fetchRoomList = () => {
     if (!userInfo) return;
 
-    // 방 목록 가져오기
     axios.get(`/api/chatroom/list/${userInfo.id}`)
         .then((res) => {
             setRooms(res.data);
+            console.log("방 목록 갱신됨");
         })
         .catch((err) => console.error("방 목록 불러오기 실패", err));
+};
 
- 
-    }, [userInfo]);
+// ✅ 2. userInfo가 바뀌었을 때 방 목록 불러오기
+useEffect(() => {
+    fetchRoomList();
+}, [userInfo]);
 
         // 친구 목록 불러오기 및 polling (1초마다 갱신)
 useEffect(() => {
@@ -294,6 +300,25 @@ const handleInvite = (friend) => {
         setfriendlistswitched(true);
     };
 
+    const ToggleUpgrade = () => {
+        setUpradeOpened(!isUpgradeOpened);
+        const filtered = displayFriendList.filter(
+            (friend) =>
+                !roomates.some((participant) => participant.profile.userId === friend.userId)
+        );
+    
+        setFilteredFriendList(filtered);
+        console.log("초대 가능한 친구 목록:", filtered);
+    }
+
+    const closeUpgradeModal = () =>{
+        setUpradeOpened(false);
+        fetchRoomList();
+        setSelectedUserIds([]);
+        setLoadingComplete_mate(false);
+        setLoadingComplete_chat(false);
+    }
+
     
     const navigate = useNavigate();
       const goSetting = () => {
@@ -356,8 +381,37 @@ const handleCreateRoom = async () => {
     }
     
   };
+
+  const toggleSelect = (userId) => {
+    setSelectedUserIds((prev) => {
+        const updated = prev.includes(userId)
+            ? prev.filter(id => id !== userId)
+            : [...prev, userId];
+        console.log("현재 선택된 유저 ID 목록:", updated);
+        return updated;
+    });
+};
+
+const handleUpgrade = () => {
+    const existingIds = roomates.map((r) => r.user.id);
+    const newUserIds = [...new Set([...existingIds, ...selectedUserIds])];
+
+    axios.post(`/api/chatroom/upgrade`, {
+        originalRoomId: roomId,
+        newUserIds: newUserIds,
+        roomName: roomName
+    })
+        .then(() => {
+            alert("초대 성공!");
+            closeUpgradeModal();
+        })
+        .catch((error) => {
+            console.error("초대 실패", error);
+            alert("초대에 실패했습니다.");
+        });
+};
  
-  
+
 
 //**본 메인 화면**//
     return (
@@ -562,15 +616,7 @@ const handleCreateRoom = async () => {
 
        )}
         
-        {isExitModalOpened && (
-                <div class = "modal-overlay">
-                    <div class = "exit-modal-container">
-                        <div class = "exit-modal-container-text">방에서 나가시겠습니까?</div>
-                        <div class = "exit-modal-button-1">네</div>
-                        <div class = "exit-modal-button-2" onClick = {ToggleExitRoom}>아니오</div>
-                    </div>
-                </div>
-        )}
+     
 
     
 
@@ -588,10 +634,44 @@ const handleCreateRoom = async () => {
                 : roomates.map((mate, index) => (
                     <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} image = {mate.profile.imageUrl} loading = {loading_mate}/>
                 ))}
+                {!friendlistswitched && roomates.length === 2 && (
+                    <div className="chatroom-upgrade-button" onClick={ToggleUpgrade}>
+                        <img
+                            className="upgrade-add-icon"
+                            src={require('./assets/add-white.png')}
+                            alt="기본 프로필 이미지"
+                        />
+                    </div>
+                )}
             </div>
             
         </div>
-    
+        
+
+        {isUpgradeOpened && (
+                <div class = "modal-overlay">
+                    <div class = "exit-modal-container">
+                        <div class = "exit-modal-container-text">누구를 초대하시겠습니까?</div>
+                        <div class = "chat-room-upgrade-panel">
+                            {filteredFriendList.map((user, index) => (
+                                <InviteList
+                                    key = {index}
+                                    id = {user.userId}
+                                    name = {user.nickname}
+                                    isSelected={selectedUserIds.includes(user.userId)}
+                                    toggleSelect={toggleSelect}
+                                    />
+                            ))}
+                        </div>
+                        <div class = "exit-madal-cancel" onClick={ToggleUpgrade}>Cancel</div>
+                        <div class = "exit-madal-confirm"
+                            onClick={handleUpgrade}
+                            disabled={selectedUserIds.length === 0}>
+                                OK
+                        </div>
+                    </div>
+                </div>
+        )}
         
     </div>
     );
