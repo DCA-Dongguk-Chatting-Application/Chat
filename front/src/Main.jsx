@@ -7,10 +7,6 @@ import FriendList from "./component/FriendList"; // 친구목록 컴포넌트
 import MateList from "./component/MateList"; // 참여자 목록 보여주는 컴포넌트
 import RoomList from "./component/RoomList"; // 방 목록 보여주는 컴포넌트
 import WebSocketConnector from "./component/WebSocketConnector";
-import {chatlog} from "./Testdata/testdata_chat"; //대화목록
-import {friendlist} from "./Testdata/testdata_friendlist"; //친구목록
-import {roomates} from "./Testdata/testdata_roomates"; // 참여자 목록
-import {rooms} from "./Testdata/testdata_roomlist"; // 방 목록
 import InviteList from "./component/InviteList";
 import axios from 'axios'
 
@@ -209,47 +205,35 @@ useEffect(() => {
 // ✅ 3. roomId가 선택된 후 참여자 목록과 채팅 기록 가져오기
 useEffect(() => {
     if (!roomId) return;
-
-    setLoadingComplete_mate(false);
-    setLoadingComplete_chat(false);
-    setLoadingComplete_complete(false);
-
-    fetchMatesList(roomId);
-    fetchChatLog(roomId);
-}, [roomId]);
-
-const fetchMatesList = (roomId) => {
+            setLoadingComplete_mate(false);
+            setLoadingComplete_chat(false);
+            setLoadingComplete_complete(false);
+    // 참여자 목록
     axios.get(`/api/chatroom/${roomId}/participants`)
         .then((res) => {
             setRoomatesList(res.data);
             console.log("참여자목록 부름");
-
+            // imageUrl + userId만 추출한 리스트 저장
             const avatars = res.data.map((entry) => ({
                 userId: entry.profile.userId,
                 imageUrl: entry.profile.imageUrl,
-                nickname: entry.profile.nickname
+                nickname : entry.profile.nickname
             }));
             setAvatarList(avatars);
-            console.log("AvatarList:", avatars);
-
+            console.log("AvatarList:", avatarList);
             setLoadingComplete_mate(true);
         })
-        .catch((err) => {
-            console.error("참여자목록 불러오기 실패", err);
-        });
-};
+        .catch((err) => console.error("참여자목록 불러오기 실패", err));
 
-const fetchChatLog = (roomId) => {
+    // 과거 채팅기록
     axios.get(`/api/chatroom/${roomId}/messages`)
         .then((res) => {
             setChatLog(res.data);
             setLoadingComplete_chat(true);
         })
-        .catch((err) => {
-            console.error("채팅 기록 불러오기 실패", err);
-        });
-};
+        .catch((err) => console.error("채팅 기록 불러오기 실패", err));
 
+}, [roomId]);
 
 // 참여자, 채팅 로딩 모두 완료되면 최종 로딩 완료 처리
 useEffect(() => {
@@ -326,8 +310,6 @@ const handleInvite = (friend) => {
     const closeUpgradeModal = () =>{
         setUpradeOpened(false);
         fetchRoomList();
-        fetchMatesList(roomId);
-        fetchChatLog();
         setSelectedUserIds([]);
         setLoadingComplete_mate(false);
         setLoadingComplete_chat(false);
@@ -364,7 +346,8 @@ const handleCreateRoom = async () => {
   
       // 성공 시 처리
             console.log('1대1 채팅방 생성 성공:', response.data);
-            fetchRoomList();
+            const roomRes = await axios.get(`/api/chatroom/list/${userId}`);//방 생성후 리스트 재 로딩딩
+            setRooms(roomRes.data);
 
             setRoomAddModalOpened(!isRoomAddModalOpened);
         } catch (error) {
@@ -383,7 +366,8 @@ const handleCreateRoom = async () => {
   
       // 성공 시 처리
             console.log('1대n 채팅방 생성 성공:', response.data);
-            fetchRoomList();
+            const roomRes = await axios.get(`/api/chatroom/list/${userId}`);
+            setRooms(roomRes.data);
 
             setRoomAddModalOpened(!isRoomAddModalOpened);
         } catch (error) {
@@ -408,17 +392,11 @@ const handleUpgrade = () => {
     const existingIds = roomates.map((r) => r.user.id);
     const newUserIds = [...new Set([...existingIds, ...selectedUserIds])];
 
-    if (newUserIds.length === existingIds.length) {
-        alert("추가할 인원이 없습니다.");
-        return;
-    }
-
-    if (existingIds.length === 2) {//1대1 채팅 분기점
-        axios.post(`/api/chatroom/upgrade`, {
-            originalRoomId: roomId,
-            newUserIds: newUserIds,
-            roomName: roomName
-        })
+    axios.post(`/api/chatroom/upgrade`, {
+        originalRoomId: roomId,
+        newUserIds: newUserIds,
+        roomName: roomName
+    })
         .then(() => {
             alert("초대 성공!");
             closeUpgradeModal();
@@ -427,20 +405,6 @@ const handleUpgrade = () => {
             console.error("초대 실패", error);
             alert("초대에 실패했습니다.");
         });
-    } else {//1대n채팅 분기점
-        
-        axios.post(`/api/chatroom/${roomId}/add-participants`, {
-            userIds: newUserIds
-        })
-        .then(() => {
-            alert("참여자 추가 성공!");
-            closeUpgradeModal();
-        })
-        .catch((error) => {
-            console.error("참여자 추가 실패", error);
-            alert("참여자 추가에 실패했습니다.");
-        });
-    }
 };
  
 
@@ -666,7 +630,7 @@ const handleUpgrade = () => {
                 : roomates.map((mate, index) => (
                     <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} image = {mate.profile.imageUrl} loading = {loading_mate}/>
                 ))}
-                {!friendlistswitched && (
+                {!friendlistswitched && roomates.length === 2 && (
                     <div className="chatroom-upgrade-button" onClick={ToggleUpgrade}>
                         <img
                             className="upgrade-add-icon"
