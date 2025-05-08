@@ -6,6 +6,8 @@ import com.dongguk.chat.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.cglib.core.Local;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Document(indexName = "message")
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,4 +39,9 @@ public class Message {
     // 첨부 파일 (선택적)
     @OneToOne(mappedBy = "message", cascade = CascadeType.ALL)
     private FileAttachment file;
+
+    @PrePersist
+    public void setSentAt(){
+        this.setSentAt(LocalDateTime.now());
+    }
 }

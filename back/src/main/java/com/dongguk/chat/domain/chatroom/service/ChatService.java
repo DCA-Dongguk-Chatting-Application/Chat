@@ -5,6 +5,8 @@ import com.dongguk.chat.domain.chatroom.dto.ChatRoomAddparticipantsDto;
 import com.dongguk.chat.domain.chatroom.dto.ChatRoomCreateDto;
 import com.dongguk.chat.domain.chatroom.dto.ChatRoomGroupCreateDto;
 import com.dongguk.chat.domain.chatroom.dto.ChatRoomUpgradeDto;
+import com.dongguk.chat.domain.message.infra.MessageDocument;
+import com.dongguk.chat.domain.message.infra.MessageSearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
+    private final MessageSearchRepository messageSearchRepository;
 
 
     public Message saveMessage(MessageSendDto dto) {
@@ -47,7 +50,10 @@ public class ChatService {
 
         System.out.println("메세지 저장 : " + message.getContent());
 
-        return messageRepository.save(message);
+        Message saveMessage = messageRepository.save(message);
+        messageSearchRepository.save(MessageDocument.from(saveMessage));
+
+        return saveMessage;
     }
 
     public List<MessageSendDto> getMessagesByRoomId(Long roomId) {

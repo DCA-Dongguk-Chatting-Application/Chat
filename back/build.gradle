@@ -32,6 +32,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+
+	implementation 'com.internetitem:logback-elasticsearch-appender:1.6'
+	implementation 'dev.akkinoc.spring.boot:logback-access-spring-boot-starter:3.2.1'
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
