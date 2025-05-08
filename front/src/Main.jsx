@@ -672,7 +672,7 @@ const handleTextSearch = () => {
                 : roomates.map((mate, index) => (
                     <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} image = {mate.profile.imageUrl} loading = {loading_mate}/>
                 ))}
-                {!friendlistswitched && roomates.length === 2 && (
+                {!friendlistswitched && (
                     <div className="chatroom-upgrade-button" onClick={ToggleUpgrade}>
                         <img
                             className="upgrade-add-icon"
