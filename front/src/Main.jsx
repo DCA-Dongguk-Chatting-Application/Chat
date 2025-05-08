@@ -7,10 +7,6 @@ import FriendList from "./component/FriendList"; // 친구목록 컴포넌트
 import MateList from "./component/MateList"; // 참여자 목록 보여주는 컴포넌트
 import RoomList from "./component/RoomList"; // 방 목록 보여주는 컴포넌트
 import WebSocketConnector from "./component/WebSocketConnector";
-import {chatlog} from "./Testdata/testdata_chat"; //대화목록
-import {friendlist} from "./Testdata/testdata_friendlist"; //친구목록
-import {roomates} from "./Testdata/testdata_roomates"; // 참여자 목록
-import {rooms} from "./Testdata/testdata_roomlist"; // 방 목록
 import InviteList from "./component/InviteList";
 import axios from 'axios'
 
@@ -48,7 +44,10 @@ export const Main = () => {
     const [loading_complete, setLoadingComplete_complete] = useState(false)//채팅, 참여자 모두 로딩 되었는지 여부 검사
     const [filteredFriendList, setFilteredFriendList] = useState([]); // 초대 가능한 친구 목록(친구목록에서 참가자 빼기)
     const [selectedUserIds, setSelectedUserIds] = useState([]);//chat-upgrade 시 선택된 자들
+    const [textsearchopened, istextsearchopened] = useState(false);//채팅 검색 팝업창
+    const [searchtext, setSearchtext] = useState("");
     //프로필 생성- 프사
+    const [previewImage, setPreviewImage] = useState(null);
     const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
     const serverUrl = 'http://59.24.237.51:8080';
@@ -58,14 +57,14 @@ export const Main = () => {
     const [userInfo, setUserInfo] = useState(null);
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("accessToken");
-   
+
 
     const profileClose = () => {
         setProfileModalOpened(false);
     }
 //파일 업로드  (채팅버튼)
     const handleFileUpload = (e) => {
-       
+    
         const file = e.target.files[0];
         if (file) {
             alert(`선택된 파일: ${file.name}`);
@@ -76,13 +75,20 @@ export const Main = () => {
 //프사 설정 (프로필 생성)
 const handleImageChange = (e) => {
     profileImageRef.current = e.target.files[0];
-    if(profileImageRef.current){
-        alert(`선택한 파일 : ${profileImageRef.current.name}`)
+
+    if (profileImageRef.current) {
+        alert(`선택한 파일 : ${profileImageRef.current.name}`);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewImage(reader.result); // 미리보기 이미지 저장
+        };
+        reader.readAsDataURL(profileImageRef.current);
     }
- 
 };
+
 //프로필을 불러와서, 이미 있다면 팝업창 false
-  const fetchUserInfo = async () => {
+const fetchUserInfo = async () => {
     try {
         const user_profile = await GetUserProfile(token);
         setUserProfile(user_profile);
@@ -90,9 +96,9 @@ const handleImageChange = (e) => {
         setLoadingComplete(true);//로딩 검사
         if (user_profile.nickname) {
             setProfileModalOpened(false);
-          } else {
+        } else {
             setProfileModalOpened(true);
-          }
+        }
     } catch (err) {
         alert("확인된 프로필 정보가 없습니다. 프로필을 생성해 주세요");
     }
@@ -106,7 +112,7 @@ const handleProfileConfirm = async (e) => {
         return;
     }
 
-   
+
     const formData = new FormData();
     
     if(profileImageRef.current){
@@ -119,24 +125,24 @@ const handleProfileConfirm = async (e) => {
     console.log('전송할 이미지:', profileImageRef.current);       // Long 타입, 문자열로 보내도 됨
 
     try {
-      const response = await axios.post('/api/profile', formData, {
+    const response = await axios.post('/api/profile', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          
+        'Content-Type': 'multipart/form-data',
+        
         },
         
         
-      }
+    }
     );
-      console.log('프로필 생성 성공:', response.data);
-      setProfileModalOpened(false);
-      alert("프로필을 생성했습니다!");
-      navigate(0);
+    console.log('프로필 생성 성공:', response.data);
+    setProfileModalOpened(false);
+    alert("프로필을 생성했습니다!");
+    navigate(0);
     } catch (error) {
-      console.error('프로필 생성 실패:', error);
+    console.error('프로필 생성 실패:', error);
     }
     
-  };
+};
 
 // ✅ 1. 유저 정보 가져오기
 useEffect(() => {
@@ -209,47 +215,35 @@ useEffect(() => {
 // ✅ 3. roomId가 선택된 후 참여자 목록과 채팅 기록 가져오기
 useEffect(() => {
     if (!roomId) return;
-
-    setLoadingComplete_mate(false);
-    setLoadingComplete_chat(false);
-    setLoadingComplete_complete(false);
-
-    fetchMatesList(roomId);
-    fetchChatLog(roomId);
-}, [roomId]);
-
-const fetchMatesList = (roomId) => {
+            setLoadingComplete_mate(false);
+            setLoadingComplete_chat(false);
+            setLoadingComplete_complete(false);
+    // 참여자 목록
     axios.get(`/api/chatroom/${roomId}/participants`)
         .then((res) => {
             setRoomatesList(res.data);
             console.log("참여자목록 부름");
-
+            // imageUrl + userId만 추출한 리스트 저장
             const avatars = res.data.map((entry) => ({
                 userId: entry.profile.userId,
                 imageUrl: entry.profile.imageUrl,
-                nickname: entry.profile.nickname
+                nickname : entry.profile.nickname
             }));
             setAvatarList(avatars);
-            console.log("AvatarList:", avatars);
-
+            console.log("AvatarList:", avatarList);
             setLoadingComplete_mate(true);
         })
-        .catch((err) => {
-            console.error("참여자목록 불러오기 실패", err);
-        });
-};
+        .catch((err) => console.error("참여자목록 불러오기 실패", err));
 
-const fetchChatLog = (roomId) => {
+    // 과거 채팅기록
     axios.get(`/api/chatroom/${roomId}/messages`)
         .then((res) => {
             setChatLog(res.data);
             setLoadingComplete_chat(true);
         })
-        .catch((err) => {
-            console.error("채팅 기록 불러오기 실패", err);
-        });
-};
+        .catch((err) => console.error("채팅 기록 불러오기 실패", err));
 
+}, [roomId]);
 
 // 참여자, 채팅 로딩 모두 완료되면 최종 로딩 완료 처리
 useEffect(() => {
@@ -287,19 +281,19 @@ function sendMessage() {
 //채팅 오면 자동으로 스크롤 아래로
 useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [chatlog]);
+}, [chatlog]);
 //방 생성시 친구초대
 const handleInvite = (friend) => {
     setDisplayFriendList(displayFriendList.filter(f => f.userId !== friend.userId));
     setInviteList([...inviteList, friend]);
-  };
+};
 
-  const handleRemoveInvite = (friend) => {
+const handleRemoveInvite = (friend) => {
     setInviteList(inviteList.filter(f => f.userId !== friend.userId));
     setDisplayFriendList([...displayFriendList, friend]);
-  };
+};
     //각 팝업창 on/off관리
     const ToggleMyMenu = () => {//내 메뉴
         // setmymenuModalOpened(!ismymenuModalOpened);
@@ -310,6 +304,10 @@ const handleInvite = (friend) => {
     const ToggleExitRoom = () => {//나가기 버튼 클릭 후 팝업
         setRoomId(null);
         setfriendlistswitched(true);
+    };
+
+    const ToggleTextSearch = () => {//나가기 버튼 클릭 후 팝업
+        istextsearchopened(!textsearchopened)
     };
 
     const ToggleUpgrade = () => {
@@ -326,8 +324,6 @@ const handleInvite = (friend) => {
     const closeUpgradeModal = () =>{
         setUpradeOpened(false);
         fetchRoomList();
-        fetchMatesList(roomId);
-        fetchChatLog();
         setSelectedUserIds([]);
         setLoadingComplete_mate(false);
         setLoadingComplete_chat(false);
@@ -335,9 +331,9 @@ const handleInvite = (friend) => {
 
     
     const navigate = useNavigate();
-      const goSetting = () => {
+    const goSetting = () => {
         navigate("/setting"); 
-      };
+    };
 //방 클릭 시, 방의 아이디 이름 저장
     const handleRoomClick = (id, name) => {
         setRoomId(id);
@@ -350,8 +346,8 @@ const handleCreateRoom = async () => {
     const invitedUserIds = inviteList.map(friend => friend.userId);//초대한 인원들의 ID을 모두 inviteList에 담는다
     const roomName = newRoomname; // 예: "chat_123_456"
     if (invitedUserIds.length == 0) {//0명일 경우 생성 불가
-      alert('아무도 초대하지 않았습니다');
-      return;
+    alert('아무도 초대하지 않았습니다');
+    return;
     }
 
     else if (invitedUserIds.length == 1){ // 1대1기능
@@ -360,11 +356,12 @@ const handleCreateRoom = async () => {
             roomName: roomName,
             myId: userId,
             partnerId: invitedUserIds[0]
-      });
-  
+    });
+
       // 성공 시 처리
             console.log('1대1 채팅방 생성 성공:', response.data);
-            fetchRoomList();
+            const roomRes = await axios.get(`/api/chatroom/list/${userId}`);//방 생성후 리스트 재 로딩딩
+            setRooms(roomRes.data);
 
             setRoomAddModalOpened(!isRoomAddModalOpened);
         } catch (error) {
@@ -379,11 +376,12 @@ const handleCreateRoom = async () => {
             const response = await axios.post('/api/chatroom/group', {
             roomName: roomName,
             userIds : invitedUserIds,
-      });
-  
+    });
+
       // 성공 시 처리
             console.log('1대n 채팅방 생성 성공:', response.data);
-            fetchRoomList();
+            const roomRes = await axios.get(`/api/chatroom/list/${userId}`);
+            setRooms(roomRes.data);
 
             setRoomAddModalOpened(!isRoomAddModalOpened);
         } catch (error) {
@@ -392,9 +390,9 @@ const handleCreateRoom = async () => {
         }
     }
     
-  };
+};
 
-  const toggleSelect = (userId) => {
+const toggleSelect = (userId) => {
     setSelectedUserIds((prev) => {
         const updated = prev.includes(userId)
             ? prev.filter(id => id !== userId)
@@ -408,17 +406,11 @@ const handleUpgrade = () => {
     const existingIds = roomates.map((r) => r.user.id);
     const newUserIds = [...new Set([...existingIds, ...selectedUserIds])];
 
-    if (newUserIds.length === existingIds.length) {
-        alert("추가할 인원이 없습니다.");
-        return;
-    }
-
-    if (existingIds.length === 2) {//1대1 채팅 분기점
-        axios.post(`/api/chatroom/upgrade`, {
-            originalRoomId: roomId,
-            newUserIds: newUserIds,
-            roomName: roomName
-        })
+    axios.post(`/api/chatroom/upgrade`, {
+        originalRoomId: roomId,
+        newUserIds: newUserIds,
+        roomName: roomName
+    })
         .then(() => {
             alert("초대 성공!");
             closeUpgradeModal();
@@ -427,22 +419,24 @@ const handleUpgrade = () => {
             console.error("초대 실패", error);
             alert("초대에 실패했습니다.");
         });
-    } else {//1대n채팅 분기점
-        
-        axios.post(`/api/chatroom/${roomId}/add-participants`, {
-            userIds: newUserIds
-        })
-        .then(() => {
-            alert("참여자 추가 성공!");
-            closeUpgradeModal();
-        })
-        .catch((error) => {
-            console.error("참여자 추가 실패", error);
-            alert("참여자 추가에 실패했습니다.");
-        });
-    }
 };
- 
+
+const handleTextSearch = () => {
+    axios.get(`api/message/${roomId}/find`, {
+        params: {
+            roomId: roomId,
+            keyword: searchtext
+        }
+    })
+    .then((res) => {
+        setChatLog(res.data);
+        console.log("✅ 검색 완료: ", res.data); // ← 여기에서 검색된 채팅 로그 확인
+    })
+    .catch((error) => {
+        console.error("❌ 검색 실패", error);
+        alert("검색에 실패했습니다.");
+    });
+};
 
 
 //**본 메인 화면**//
@@ -456,15 +450,22 @@ const handleUpgrade = () => {
                     <div class = "profile-modal-sub-intro">진행하시려면 정보를 입력해주세요</div>
                     <div class = "profile-modal-name-guide" >닉네임</div>
                     <div className="profile-modal-image-guide">프로필 이미지</div>
-                    <input 
-                         type="file" 
+                    <label for="file-upload">
+                        <div class="btn-upload">파일 업로드하기</div>
+                    </label>
+                    <input
+                        id = "file-upload"
+                        type="file" 
                         accept="image/*" 
                         className="profile-modal-image-upload"
                         onChange={handleImageChange}
                     />
+                    <div class = "profile-create-image-container">
+                    {previewImage && <img src={previewImage} alt="미리보기" className="profile-preview-image" />}
+                    </div>
                     <input class = "profile-modal-name-textbox" placeholder="닉네임 입력" onChange={(e) => setProFileNick(e.target.value)}/>
                     <div class = "profile-modal-confirm-button" onClick = {handleProfileConfirm}>확인</div>
-                    {/* <div class = "profile-modal-close" onClick={profileClose}>닫기</div> */}
+                    
                 </div>
             </div>
         )}
@@ -533,7 +534,7 @@ const handleUpgrade = () => {
 
             </div>
             <div class = "left-banner-profile-container">
-                 <div class = "left-banner-my-profile" onClick = {goSetting}>
+                <div class = "left-banner-my-profile" onClick = {goSetting}>
                 
 
                     {loading==false ? (
@@ -555,7 +556,7 @@ const handleUpgrade = () => {
                             alt="기본 프로필 이미지"
                             />
                     )}
-                 </div>
+                </div>
             </div>
 
             {ismymenuModalOpened && (
@@ -568,8 +569,8 @@ const handleUpgrade = () => {
                             src={require(`./assets/close.png`)}
                             alt="close icon"
                             className="close-icon"
-                         /> 
-                         
+                        />
+                        
                         </div>
                         <div class = "main-menu-my-profile-modal-profile-button" onClick = {goSetting}>프로필로</div>
                     </div>
@@ -578,7 +579,7 @@ const handleUpgrade = () => {
 
             {loading? (<div class = "main-left-my-name">{userProfile.nickname}</div>) : ("Loading")}
             
-         
+        
         </div>
 
         <div class = "bottom-banner">
@@ -589,9 +590,9 @@ const handleUpgrade = () => {
                 onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault(); // enter키로 전송
-                      sendMessage();
+                    sendMessage();
                     }
-                  }}></input>
+                }}></input>
             <button class = "message-send-button" onClick={sendMessage}>전송</button>
             
             <button className="file-button" onClick={() => fileInputRef.current.click()}>
@@ -605,9 +606,9 @@ const handleUpgrade = () => {
                 onChange={handleFileUpload}
             />
             
-               
+            
         </div>
-       {roomId ? (
+        {roomId ? (
         <div class = "center-banner" ref = {chatContainerRef}>
             <div class = "center-banner-top">
                 <div class = "center-banner-top-text">{roomName}</div>
@@ -618,6 +619,26 @@ const handleUpgrade = () => {
                         className="close-icon"
                     />
                 </div>
+
+                <div class = "center-banner-search-button" onClick={ ToggleTextSearch}>
+                    <img
+                        src={require(`./assets/search.png`)}
+                        alt="close icon"
+                        className="search-icon"
+                    />
+                </div>
+                {textsearchopened &&
+                 <div class = "center-banner-search-modal">
+                    <input class = "center-banner-textbox"
+                        placeholder = "검색어 입력"
+                        onChange={(e) => setSearchtext(e.target.value)}
+                    />
+                    <div class = "center-banner-searchbox-ok-button" onClick={handleTextSearch}>검색</div>
+                </div>
+                }
+                
+
+
             </div>
             
             {chatlog.map((chat, index) => {
@@ -640,26 +661,26 @@ const handleUpgrade = () => {
                 );
             })}
         </div>
-       ) : (
+    ) : (
         <div class = "center-banner">
             <div class = "center-banner-guide-1">현재 선택한 채팅방이 없습니다</div>
             <div class = "center-banner-guide-2">좌측에서 방을 만들거나 선택하세요</div>
         </div>
 
-       )}
+    )}
         
-     
+    
 
     
 
         <div class = "right-banner">
             <div class = "title-friend-list-container">
                 <h3 class = "title-friend-list">{friendlistswitched? ("친구목록"):("참가자")}</h3>
-               
+
             </div>
             
             <div className="right-banner-friend-list-zone">
-             {friendlistswitched
+            {friendlistswitched
                 ? friendlist.map((friend, index) => (
                     <FriendList key={index} id={friend.userId} name={friend.nickname} isOnline = {friend.online} image = {friend.imageUrl} loading = {loading_friend} />
                 ))
