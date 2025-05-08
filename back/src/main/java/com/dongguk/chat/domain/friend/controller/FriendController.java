@@ -2,6 +2,7 @@ package com.dongguk.chat.domain.friend.controller;
 
 import com.dongguk.chat.domain.friend.FriendShip;
 import com.dongguk.chat.domain.friend.dto.FriendDto;
+import com.dongguk.chat.domain.friend.dto.FriendReq;
 import com.dongguk.chat.domain.friend.dto.FriendRequestDto;
 import com.dongguk.chat.domain.friend.service.FriendShipService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,16 +68,16 @@ public class FriendController {
             description = """
                     다른 사용자에게 친구 요청을 보냅니다.
 
-                    - 요청자는 `requesterId`, 수신자는 `receiverId`로 지정합니다.
+                    - 요청자는 `requesterId`, 수신자는 `receiverNickName`로 지정합니다.
                     - 요청 상태는 자동으로 `REQUESTED`로 설정됩니다.
                     - 이미 존재하는 요청이나 친구 관계가 있다면 예외 처리 필요합니다.
                     """
     )
     @PostMapping("/request")
-    public void sendFriendRequest(@RequestBody FriendRequestDto requestDto) {
+    public void sendFriendRequest(@RequestBody FriendReq requestDto) {
         friendShipService.createFriendRequest(
-                requestDto.getRequesterId(),
-                requestDto.getReceiverId());
+                requestDto.requesterId(),
+                requestDto.receiverNickName());
     }
     @Operation(
             summary = "친구 요청 수락",
