@@ -47,6 +47,7 @@ export const Main = () => {
     const [textsearchopened, istextsearchopened] = useState(false);//채팅 검색 팝업창
     const [searchtext, setSearchtext] = useState("");
     //프로필 생성- 프사
+    const [previewImage, setPreviewImage] = useState(null);
     const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
     const serverUrl = 'http://59.24.237.51:8080';
@@ -74,11 +75,18 @@ export const Main = () => {
 //프사 설정 (프로필 생성)
 const handleImageChange = (e) => {
     profileImageRef.current = e.target.files[0];
-    if(profileImageRef.current){
-        alert(`선택한 파일 : ${profileImageRef.current.name}`)
-    }
 
+    if (profileImageRef.current) {
+        alert(`선택한 파일 : ${profileImageRef.current.name}`);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewImage(reader.result); // 미리보기 이미지 저장
+        };
+        reader.readAsDataURL(profileImageRef.current);
+    }
 };
+
 //프로필을 불러와서, 이미 있다면 팝업창 false
 const fetchUserInfo = async () => {
     try {
@@ -442,15 +450,22 @@ const handleTextSearch = () => {
                     <div class = "profile-modal-sub-intro">진행하시려면 정보를 입력해주세요</div>
                     <div class = "profile-modal-name-guide" >닉네임</div>
                     <div className="profile-modal-image-guide">프로필 이미지</div>
+                    <label for="file-upload">
+                        <div class="btn-upload">파일 업로드하기</div>
+                    </label>
                     <input
+                        id = "file-upload"
                         type="file" 
                         accept="image/*" 
                         className="profile-modal-image-upload"
                         onChange={handleImageChange}
                     />
+                    <div class = "profile-create-image-container">
+                    {previewImage && <img src={previewImage} alt="미리보기" className="profile-preview-image" />}
+                    </div>
                     <input class = "profile-modal-name-textbox" placeholder="닉네임 입력" onChange={(e) => setProFileNick(e.target.value)}/>
                     <div class = "profile-modal-confirm-button" onClick = {handleProfileConfirm}>확인</div>
-                    {/* <div class = "profile-modal-close" onClick={profileClose}>닫기</div> */}
+                    
                 </div>
             </div>
         )}
