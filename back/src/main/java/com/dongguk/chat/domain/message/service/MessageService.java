@@ -23,7 +23,7 @@ public class MessageService {
 //        List<MessageDocument> allByKeyword = messageSearchRepository.findByChatRoomIdAndContentContaining(roomId, keyword);
 //        System.out.println(messageSearchRepository.count());
 //
-        List<Message> allByKeyword = messageRepository.findAllByKeyword(roomId,'%' + keyword + '%');
+        List<Message> allByKeyword = messageRepository.findAllByChatRoomIdAndContentContaining(roomId, keyword);
 //
 //
         long end = System.currentTimeMillis();

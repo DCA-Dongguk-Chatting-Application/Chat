@@ -15,7 +15,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     List<Message> findByChatRoomId(Long chatRoomId);
 
-    @Query("select m from Message m where m.chatRoom.id= :roomId and m.content like :content")
-    List<Message> findAllByKeyword(@Param("roomId") Long roomId, @Param("content") String content);
+
+    List<Message> findAllByChatRoomIdAndContentContaining(Long roomId, String content);
 }
 

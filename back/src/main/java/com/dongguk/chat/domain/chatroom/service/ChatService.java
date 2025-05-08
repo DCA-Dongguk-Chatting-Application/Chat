@@ -68,10 +68,6 @@ public class ChatService {
             .collect(Collectors.toList());
     }
 
-    public  List<MessageSendDto> findMessageByJpa(Long roomId, String keyword){
-        return MessageSendDto.from(messageRepository.findAllByKeyword(roomId, keyword));
-    }
-
 
 
 
