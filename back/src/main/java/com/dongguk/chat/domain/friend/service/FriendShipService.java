@@ -3,12 +3,12 @@ package com.dongguk.chat.domain.friend.service;
 import com.dongguk.chat.domain.friend.FriendShip;
 import com.dongguk.chat.domain.friend.dto.FriendDto;
 import com.dongguk.chat.domain.friend.repository.FriendShipRepository;
+import com.dongguk.chat.domain.profile.UserProfile;
 import com.dongguk.chat.domain.profile.repository.ProfileRepository;
 import com.dongguk.chat.domain.user.User;
 import com.dongguk.chat.domain.user.repository.UserRepository;
 import com.dongguk.chat.presence.OnlineUserTracker;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +64,7 @@ public class FriendShipService {
     public void createFriendRequest(Long requesterId, String receiverNickname){
         User requestUser = userRepository.findById(requesterId).get();
 
-        Profile receivedUserProfile = profileRepository.findByNickname(receiverNickname);
+        UserProfile receivedUserProfile = profileRepository.findByNickname(receiverNickname);
         User receivedUser = userRepository.findByProfile(receivedUserProfile);
 
         FriendShip reqFriendShip = FriendShip.create(requestUser, receivedUser);
