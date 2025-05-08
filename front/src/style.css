@@ -8,6 +8,12 @@
     height : 40px;
 }
 
+.search-icon{
+    pointer-events: none;
+    width : 40px;
+    height : 40px;
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -383,6 +389,68 @@
     
     border : 2px black;
 }
+
+.center-banner-search-button{
+    position : absolute;
+    top : 20px;
+    right : 370px;
+    background-color: none;
+    width : 50px;
+    height : 50px;
+    border-radius : 5px;
+    justify-content: center;
+    align-items: center;
+    border : 2px green;
+}
+
+.center-banner-search-modal{
+    width : 350px;
+    height : 50px;
+    background-color: #696969;
+    position :absolute;
+    right : 440px;
+    top : 40px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    display : flex;
+}
+
+.center-banner-textbox{
+    position : absolute;
+    top : 50%;
+    left : 40%;
+    transform: translate(-50%, -50%);
+    width : 250px;
+    height : 30px;
+    border-radius: 10px;
+    font-size : 20px;
+}
+
+.center-banner-searchbox-ok-button{
+    position : absolute;
+    top : 50%;
+    right : 4%;
+    transform: translate(0%, -50%);
+    width : 60px;
+    height : 28px;
+    border-radius: 5px;
+    font-size : 20px;
+    background-color: #9f9d9d;
+    border : 2px solid #9f9d9d;
+    text-align : center;
+    color : #353535;
+    font-weight: 500;
+
+}
+
+.center-banner-searchbox-ok-button:hover{
+    border : 2px solid #444343;
+}
+
+
+
 
 .info-zone-opponent{
     display : flex;

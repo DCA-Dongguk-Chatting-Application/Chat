@@ -44,6 +44,8 @@ export const Main = () => {
     const [loading_complete, setLoadingComplete_complete] = useState(false)//채팅, 참여자 모두 로딩 되었는지 여부 검사
     const [filteredFriendList, setFilteredFriendList] = useState([]); // 초대 가능한 친구 목록(친구목록에서 참가자 빼기)
     const [selectedUserIds, setSelectedUserIds] = useState([]);//chat-upgrade 시 선택된 자들
+    const [textsearchopened, istextsearchopened] = useState(false);//채팅 검색 팝업창
+    const [searchtext, setSearchtext] = useState("");
     //프로필 생성- 프사
     const profileImageRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -296,6 +298,10 @@ const handleRemoveInvite = (friend) => {
         setfriendlistswitched(true);
     };
 
+    const ToggleTextSearch = () => {//나가기 버튼 클릭 후 팝업
+        istextsearchopened(!textsearchopened)
+    };
+
     const ToggleUpgrade = () => {
         setUpradeOpened(!isUpgradeOpened);
         const filtered = displayFriendList.filter(
@@ -407,6 +413,22 @@ const handleUpgrade = () => {
         });
 };
 
+const handleTextSearch = () => {
+    axios.get(`api/message/${roomId}/find`, {
+        params: {
+            roomId: roomId,
+            keyword: searchtext
+        }
+    })
+    .then((res) => {
+        setChatLog(res.data);
+        console.log("✅ 검색 완료: ", res.data); // ← 여기에서 검색된 채팅 로그 확인
+    })
+    .catch((error) => {
+        console.error("❌ 검색 실패", error);
+        alert("검색에 실패했습니다.");
+    });
+};
 
 
 //**본 메인 화면**//
@@ -582,6 +604,26 @@ const handleUpgrade = () => {
                         className="close-icon"
                     />
                 </div>
+
+                <div class = "center-banner-search-button" onClick={ ToggleTextSearch}>
+                    <img
+                        src={require(`./assets/search.png`)}
+                        alt="close icon"
+                        className="search-icon"
+                    />
+                </div>
+                {textsearchopened &&
+                 <div class = "center-banner-search-modal">
+                    <input class = "center-banner-textbox"
+                        placeholder = "검색어 입력"
+                        onChange={(e) => setSearchtext(e.target.value)}
+                    />
+                    <div class = "center-banner-searchbox-ok-button" onClick={handleTextSearch}>검색</div>
+                </div>
+                }
+                
+
+
             </div>
             
             {chatlog.map((chat, index) => {
