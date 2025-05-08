@@ -340,6 +340,7 @@
     top : 40%;
     left : 50%;
     transform: translate(-50%, -50%);
+    white-space: nowrap;
 }
 
 .center-banner-guide-2{
@@ -349,6 +350,7 @@
     top : 65%;
     left : 50%;
     transform: translate(-50%, -50%);
+    white-space: nowrap;
 }
 
 .center-banner-top{
@@ -409,6 +411,7 @@
 
 .name-opponent{
     color : white;
+    white-space: nowrap;
 }
 
 .chat-bubble-zone-me{
@@ -601,14 +604,24 @@
 }
 
 .chatroom-upgrade-button{
-    border : 2px solid rgb(161, 158, 158);
+    border : 2px solid #4c4c4c;
     text-align : center;
     color : white;
     font-weight: 400;
-    height : 30px;
+    height : 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    
+}
+
+.upgrade-add-icon{
+    width : 30px;
+    height: 30px;
+}
+
+.chatroom-upgrade-button:hover{
+    border : 2px solid rgb(255, 255, 255);
 }
 
 .room-list-modal-container{
@@ -804,7 +817,7 @@
     bottom : 18px;
     left : 50%;
     transform: translate(-50%, 0%);
-     
+    white-space: nowrap;
 }
 
 .left-banner-room-icon{

@@ -25,7 +25,7 @@ function InviteList({id, name, myId, roomId, roomName, existingParticipants, onI
 
     return (
        <>
-            <div class = "requestlist-container">{roomId}
+            <div class = "requestlist-container">
                 <div class = "request-name">#{id}/{name}</div>
                 <div class = "request-o" onClick={handleInvite}>초대</div>
             </div>

@@ -44,7 +44,7 @@ function ChatBubble({sender, message, time, showDate, avatarList, loading}) { //
                             />
                     )}
                     </div>
-                    <div class = "name-opponent">{sender} / {avatar?.nickname || "이름없음"}</div>
+                    <div class = "name-opponent">{avatar?.nickname || "이름없음"}</div>
                 </div>
                 
                 <div class = "chat-bubble-zone-opponent" >

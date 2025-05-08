@@ -603,7 +603,13 @@ const handleCreateRoom = async () => {
                 : roomates.map((mate, index) => (
                     <MateList key={index} id={mate.user.id} name={mate.profile?.nickname || "!!NO_DATA!!"} image = {mate.profile.imageUrl} loading = {loading_mate}/>
                 ))}
-                {!friendlistswitched && <div class = "chatroom-upgrade-button" onClick={ToggleUpgrade}>추가</div>}
+                {!friendlistswitched && <div class = "chatroom-upgrade-button" onClick={ToggleUpgrade}>
+                    <img
+                        className="upgrade-add-icon"
+                        src={require('./assets/add-white.png')}
+                        alt="기본 프로필 이미지"
+                    />
+                    </div>}
             </div>
             
         </div>
