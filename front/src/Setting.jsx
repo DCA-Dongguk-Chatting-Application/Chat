@@ -15,7 +15,7 @@ export const Setting = () => {
   const [userInfo, setUserInfo] = useState(null);//회원가입시 개인정보
   const [userProfile, setUserProfile] = useState(null);//프로필 정보
   const [loading, setLoadingComplete] = useState(false);//로딩 여부 검ㅅㅏ
-  const [newImageFile, setNewImageFile] = useState(null);//프사 
+  const [newImageFile, setNewImageFile] = useState(null);//프사
   const [friendReqlist, setFriendReqList] = useState([]);//친구요청 목록
   const [editPhone, setEditPhone] = useState("");//폰
   const [editEmail, setEditEmail] = useState("");//멜
@@ -98,7 +98,7 @@ useEffect(() => {
     const token = localStorage.getItem("accessToken");
   
     if (!requestId) {
-      alert("ID를 입력해주세요.");
+      alert("닉네임을 입력해주세요.");
       return;
     }
   
@@ -116,7 +116,7 @@ useEffect(() => {
         "/api/friends/request", 
         {
           requesterId: userInfo.id,
-          receiverId: requestId
+          receiverNickName: requestId
         },
         {
           headers: {
@@ -129,7 +129,7 @@ useEffect(() => {
       console.log("친구 요청 응답:", response.data);
     } catch (error) {
       console.error("친구신청 중 에러:", error);
-      alert("실패하였습니다. 존재하는 ID가 맞는지 확인하세요");
+      alert("실패하였습니다. 존재하는 닉네임이 맞는지 확인하세요");
     }
   };
   //프로필 수정
@@ -327,8 +327,8 @@ useEffect(() => {
               </div>
               <div>
                   <div class = "setting-mode-1-text">친구 신청하기</div>
-                  <input class = "setting-mode-searchbox" placeholder = "userID 입력" onChange={(e) => setRequestId(e.target.value)}/>
-                  <div class = "setting-searched-name">아이디 입력후 확인을 누르세요</div>
+                  <input class = "setting-mode-searchbox" placeholder = "닉네임 입력" onChange={(e) => setRequestId(e.target.value)}/>
+                  <div class = "setting-searched-name">닉네임 입력후 확인을 누르세요</div>
                   <div class = "setting-mode-confirm-ok" onClick = {sendRequest}>친구신청 보내기</div>
                 </div>
 
