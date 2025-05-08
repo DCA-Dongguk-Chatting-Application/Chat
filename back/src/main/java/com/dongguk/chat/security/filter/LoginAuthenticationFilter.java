@@ -69,5 +69,6 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
                                               AuthenticationException failed) throws IOException, ServletException {
 //        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.USER_NOT_FOUND_ERROR);
 //        responseWrapper.convertObjectToResponse(response, errorResponse);
+        response.setStatus(403);
     }
 }

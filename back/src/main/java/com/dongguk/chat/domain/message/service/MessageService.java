@@ -14,7 +14,14 @@ public class MessageService {
     private final MessageRepository messageRepository;
 
     public List<MessageSendDto> findMessageByKeywordJpa(Long roomId, String keyword){
+        long start = System.currentTimeMillis();
+
         List<Message> allByKeyword = messageRepository.findAllByKeyword(roomId,'%' + keyword + '%');
+
+
+        long end = System.currentTimeMillis();
+        System.out.println("실행 시간(ms): " + (end - start));
+
         return MessageSendDto.from(allByKeyword);
     }
 
