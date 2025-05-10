@@ -7,7 +7,7 @@ function InviteList({id, name, isSelected, toggleSelect}) {
     return (
        <>
             <div class = "requestlist-container">
-                <div class = "request-name">#{id}/{name}</div>
+                <div class = "request-name">{name}</div>
                 <div
                 className={`request-o ${isSelected ? "selected" : ""}`}
                 onClick={() => toggleSelect(id)}
