@@ -17,9 +17,7 @@ import { GetUserProfile} from "./component/UserProfile"
 
 
 export const Main = () => {
-    const [errorMessage, setErrorMessage] = useState("");
-    const [isHovered, setIsHovered] = useState(false)
-    const [ismymenuModalOpened, setmymenuModalOpened] = useState(false)
+   
     const [isRoomAddModalOpened, setRoomAddModalOpened] = useState(false)//방 추가버튼 누를시 모달창
     const [isUpgradeOpened, setUpradeOpened] = useState(false)//chatroom_upgrade 팝업
     const [isProfileModalOpened, setProfileModalOpened] = useState(true)//로그인 후, 프로필 정보 쓰는 모달이 나온다
@@ -45,33 +43,21 @@ export const Main = () => {
     const [filteredFriendList, setFilteredFriendList] = useState([]); // 초대 가능한 친구 목록(친구목록에서 참가자 빼기)
     const [selectedUserIds, setSelectedUserIds] = useState([]);//chat-upgrade 시 선택된 자들
     const [textsearchopened, istextsearchopened] = useState(false);//채팅 검색 팝업창
-    const [searchtext, setSearchtext] = useState("");
+    const [searchtext, setSearchtext] = useState(""); //검색 기능용
     //프로필 생성- 프사
-    const [previewImage, setPreviewImage] = useState(null);
-    const profileImageRef = useRef(null);
-    const fileInputRef = useRef(null);
-    const serverUrl = 'http://59.24.237.51:8080';
-    const [client, setClient] = useState(null);
-    const chatContainerRef = useRef(null);
-    const [roomId, setRoomId] = useState("");//임시
-    const [userInfo, setUserInfo] = useState(null);
-    const userId = localStorage.getItem("userId");
-    const token = localStorage.getItem("accessToken");
-
-
-    const profileClose = () => {
-        setProfileModalOpened(false);
-    }
-//파일 업로드  (채팅버튼)
-    const handleFileUpload = (e) => {
+    const [previewImage, setPreviewImage] = useState(null); //프로필 생성 시 미리보기 기능
+    const profileImageRef = useRef(null); //프로필 생성 시 전송되는 사진
     
-        const file = e.target.files[0];
-        if (file) {
-            alert(`선택된 파일: ${file.name}`);
-            // 여기에 서버 연결 api 추가가
-        }
-        
-    };
+    const serverUrl = 'http://59.24.237.51:8080';
+    const [client, setClient] = useState(null); //웹소켓용
+    const chatContainerRef = useRef(null); // 채팅 오면 스크롤 자동 내리기
+    const [roomId, setRoomId] = useState("");//임시
+    const [userInfo, setUserInfo] = useState(null); // 유저 정보 기준으로 방, 채팅 가져오기
+    const userId = localStorage.getItem("userId"); //유저ID
+    const token = localStorage.getItem("accessToken");//유저토큰
+
+
+    
 //프사 설정 (프로필 생성)
 const handleImageChange = (e) => {
     profileImageRef.current = e.target.files[0];
@@ -81,7 +67,7 @@ const handleImageChange = (e) => {
 
         const reader = new FileReader();
         reader.onloadend = () => {
-            setPreviewImage(reader.result); // 미리보기 이미지 저장
+            setPreviewImage(reader.result);
         };
         reader.readAsDataURL(profileImageRef.current);
     }
@@ -122,7 +108,7 @@ const handleProfileConfirm = async (e) => {
     // MultipartFile
     formData.append('nickname', profileNick);     // 일반 문자열
     formData.append('userId', userId);  
-    console.log('전송할 이미지:', profileImageRef.current);       // Long 타입, 문자열로 보내도 됨
+    console.log('전송할 이미지:', profileImageRef.current);
 
     try {
     const response = await axios.post('/api/profile', formData, {
@@ -559,23 +545,7 @@ const handleTextSearch = () => {
                 </div>
             </div>
 
-            {ismymenuModalOpened && (
-                <div class = "modal-overlay">
-                    <div class = "main-menu-my-profile-modal-container">
-                        <div class = "main-menu-my-profile-modal-text">내모달</div>
-                        <div class = "main-menu-my-profile-modal-close"  onClick = {ToggleMyMenu}>
-                        
-                        <img
-                            src={require(`./assets/close.png`)}
-                            alt="close icon"
-                            className="close-icon"
-                        />
-                        
-                        </div>
-                        <div class = "main-menu-my-profile-modal-profile-button" onClick = {goSetting}>프로필로</div>
-                    </div>
-                </div>
-            )}
+          
 
             {loading? (<div class = "main-left-my-name">{userProfile.nickname}</div>) : ("Loading")}
             
@@ -595,16 +565,7 @@ const handleTextSearch = () => {
                 }}></input>
             <button class = "message-send-button" onClick={sendMessage}>전송</button>
             
-            <button className="file-button" onClick={() => fileInputRef.current.click()}>
-                <img className="icon" src={file_icon} alt="로고" style={{ width: "30px" }} />
-            </button>
-
-            <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                onChange={handleFileUpload}
-            />
+           
             
             
         </div>
@@ -706,6 +667,7 @@ const handleTextSearch = () => {
                     <div class = "exit-modal-container">
                         <div class = "exit-modal-container-text">누구를 초대하시겠습니까?</div>
                         <div class = "chat-room-upgrade-panel">
+                            {filteredFriendList.length == 0 && <div class = "warn">더이상 초대할 수 없습니다</div>}
                             {filteredFriendList.map((user, index) => (
                                 <InviteList
                                     key = {index}

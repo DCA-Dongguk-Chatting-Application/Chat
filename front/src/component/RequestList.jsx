@@ -19,7 +19,7 @@ function RequestList({id, name, myId, onAccept}) {
     return (
        <>
             <div class = "requestlist-container">
-                <div class = "request-name">#{id}/{name}</div>
+                <div class = "request-name">{name}</div>
                 <div class = "request-o" onClick = {handleAccept}>수락</div>
             </div>
       </>

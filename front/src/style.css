@@ -787,16 +787,19 @@
     position : relative;
 }
 
-.chat-room-upgrade-panel{
+.chat-room-upgrade-panel {
     position: absolute;
-    top : 20%;
-    left : 50%;
+    top: 20%;
+    left: 50%;
     transform: translate(-50%, 0%);
-    width : 260px;
+    width: 260px;
     height: 180px;
     background-color: #9F9D9D;
-    border : 2px solid #353535;
-    border-radius : 5px;
+    border: 2px solid #353535;
+    border-radius: 5px;
+    overflow-y: auto; /* 세로 스크롤바 표시 */
+    overflow-x: hidden; /* 가로 스크롤은 숨김 */
+    scrollbar-width: thin;
 }
 
 .exit-modal-container-text{
@@ -1809,4 +1812,14 @@
     border-radius: 5px;
     justify-content: center;
     align-items: center;
+  }
+
+  .warn{
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    color :#353535;
+    font-weight: 500;
   }

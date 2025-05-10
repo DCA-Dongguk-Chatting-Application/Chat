@@ -15,7 +15,6 @@ export const Setting = () => {
   const [userInfo, setUserInfo] = useState(null);//회원가입시 개인정보
   const [userProfile, setUserProfile] = useState(null);//프로필 정보
   const [loading, setLoadingComplete] = useState(false);//로딩 여부 검ㅅㅏ
-  const [newImageFile, setNewImageFile] = useState(null);//프사
   const [friendReqlist, setFriendReqList] = useState([]);//친구요청 목록
   const [editPhone, setEditPhone] = useState("");//폰
   const [editEmail, setEditEmail] = useState("");//멜
@@ -79,11 +78,7 @@ useEffect(() => {
   const  toggleAddFriendModal = () => {
           setAddShowFriendModal(!showAddFriendModal);
       };
-//친추 받는창/거는창 전환
-  const [showFriendModalSwitch, setShowFriendModalSwitch] = useState(false);
-  const  toggleFriendModalSwitch = () => {
-              setShowFriendModalSwitch(!showFriendModalSwitch);
-      };
+
  
   const navigate = useNavigate();
   const goBack = () => {
@@ -293,7 +288,7 @@ useEffect(() => {
                   </div>
                   <div>
                     <div className="setting-mode-1-text">받은 친구신청</div>
-                    {/* <div className="setting-mode-switch-button" onClick={toggleFriendModalSwitch}>친구신청하기</div> */}
+
                     <div className="setting-mode-requested-container">
                       {friendReqlist.length === 0 ? (
                         <div className="no-friend-requests">친구신청이 없습니다</div>
